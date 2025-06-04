@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>数据分析 - 少儿编程机构学生档案管理系统</title>
+    <link rel="stylesheet" href="../../../css/main.css">
+    <link rel="stylesheet" href="../../../css/components/analysis.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.0.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <!-- 侧边栏 -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <h1>少儿编程机构</h1>
+            <p>学生档案管理系统</p>
+        </div>
+        <nav class="sidebar-nav">
+            <ul>
+                <li><a href="../../index.html"><i class="fas fa-home"></i> 首页</a></li>
+                <li><a href="../student/list.html"><i class="fas fa-user-graduate"></i> 学生管理</a></li>
+                <li><a href="../course/list.html"><i class="fas fa-book"></i> 课程管理</a></li>
+                <li><a href="analysis.html" class="active"><i class="fas fa-chart-bar"></i> 数据分析</a></li>
+            </ul>
+        </nav>
+    </aside>
+
+    <!-- 主要内容区 -->
+    <main class="main-content">
+        <!-- 顶部导航栏 -->
+        <div class="top-nav">
+            <h2>数据分析</h2>
+            <div class="top-nav-actions">
+                <button class="btn btn-primary" id="toggleSidebar">
+                    <i class="fas fa-bars"></i> 菜单
+                </button>
+            </div>
+        </div>
+
+        <div class="dashboard">
+            <div class="dashboard-header">
+                <h2>数据统计</h2>
+                <div class="dashboard-actions">
+                    <div class="date-range">
+                        <label for="timeRange">时间范围：</label>
+                        <select id="timeRange" class="form-control">
+                            <option value="7">最近7天</option>
+                            <option value="30">最近30天</option>
+                            <option value="90">最近90天</option>
+                            <option value="365">最近一年</option>
+                            <option value="all">全部</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 统计概览 -->
+            <div class="quick-stats">
+                <div class="stat-card">
+                    <div class="stat-card-icon">
+                        <i class="fas fa-user-graduate"></i>
+                    </div>
+                    <div class="stat-card-info">
+                        <h3>总学生数</h3>
+                        <p id="totalStudents" class="number">0</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-card-icon">
+                        <i class="fas fa-book"></i>
+                    </div>
+                    <div class="stat-card-info">
+                        <h3>总课程数</h3>
+                        <p id="totalCourses" class="number">0</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-card-icon">
+                        <i class="fas fa-graduation-cap"></i>
+                    </div>
+                    <div class="stat-card-info">
+                        <h3>平均成绩</h3>
+                        <p id="averageGrade" class="number">0</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-card-icon">
+                        <i class="fas fa-percentage"></i>
+                    </div>
+                    <div class="stat-card-info">
+                        <h3>平均报名率</h3>
+                        <p id="enrollmentRate" class="number">0%</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 图表区域 -->
+            <section class="charts-container">
+                <div class="chart-row">
+                    <div class="chart-card">
+                        <h3>课程报名情况</h3>
+                        <canvas id="enrollmentChart"></canvas>
+                    </div>
+                    <div class="chart-card">
+                        <h3>成绩分布</h3>
+                        <canvas id="gradeDistributionChart"></canvas>
+                    </div>
+                </div>
+                <div class="chart-row">
+                    <div class="chart-card">
+                        <h3>年龄分布</h3>
+                        <canvas id="ageDistributionChart"></canvas>
+                    </div>
+                    <div class="chart-card">
+                        <h3>课程级别分布</h3>
+                        <canvas id="courseLevelChart"></canvas>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 详细数据表格 -->
+            <section class="detailed-data">
+                <h3>课程详细数据</h3>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>课程名称</th>
+                                <th>级别</th>
+                                <th>报名人数</th>
+                                <th>容量</th>
+                                <th>平均成绩</th>
+                                <th>报名率</th>
+                            </tr>
+                        </thead>
+                        <tbody id="detailedDataBody">
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </div>
+
+        <!-- 页脚 -->
+        <footer class="footer">
+            <p>&copy; 2025 少儿编程机构学生档案管理系统</p>
+        </footer>
+    </main>
+
+    <script src="../../../js/modules/analysis.js"></script>
+</body>
+</html> 

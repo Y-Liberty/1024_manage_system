@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>签到管理 - 少儿编程机构管理系统</title>
+    <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="/css/components/attendance.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <!-- 侧边栏 -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2>壹零贰肆少儿编程</h2>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="/index.html" class="nav-item">
+                    <i class="fas fa-home"></i>
+                    <span>首页</span>
+                </a>
+                <a href="/pages/students/students.html" class="nav-item">
+                    <i class="fas fa-user-graduate"></i>
+                    <span>学生管理</span>
+                </a>
+                <a href="/pages/courses/courses.html" class="nav-item">
+                    <i class="fas fa-book"></i>
+                    <span>课程管理</span>
+                </a>
+                <a href="/pages/schedule/schedule.html" class="nav-item">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span>课程表</span>
+                </a>
+                <a href="/pages/attendance/attendance.html" class="nav-item active">
+                    <i class="fas fa-clipboard-check"></i>
+                    <span>签到管理</span>
+                </a>
+                <a href="/pages/finance/finance.html" class="nav-item">
+                    <i class="fas fa-money-bill-wave"></i>
+                    <span>财务管理</span>
+                </a>
+            </nav>
+        </aside>
+
+        <!-- 主内容区 -->
+        <main class="main-content">
+            <!-- 顶部导航栏 -->
+            <div class="top-nav">
+                <h2>签到管理</h2>
+                <div class="top-nav-actions">
+                    <button class="btn btn-primary" id="exportAttendanceBtn">
+                        <i class="fas fa-download"></i> 导出签到记录
+                    </button>
+                </div>
+            </div>
+
+            <!-- 签到统计卡片 -->
+            <div class="stats-cards">
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-user-check"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3>今日签到</h3>
+                        <p id="todayAttendance">0</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-calendar-check"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3>本周签到率</h3>
+                        <p id="weeklyRate">0%</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3>本月平均签到率</h3>
+                        <p id="monthlyRate">0%</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 签到操作区 -->
+            <div class="attendance-actions">
+                <div class="search-box">
+                    <input type="text" id="studentSearch" placeholder="输入学生姓名或ID搜索...">
+                    <button class="btn btn-primary" id="searchBtn">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </div>
+                <div class="action-buttons">
+                    <button class="btn btn-success" id="batchCheckInBtn">
+                        <i class="fas fa-user-plus"></i> 批量签到
+                    </button>
+                    <button class="btn btn-warning" id="batchCheckOutBtn">
+                        <i class="fas fa-user-minus"></i> 批量签退
+                    </button>
+                </div>
+            </div>
+
+            <!-- 签到记录表格 -->
+            <div class="table-container">
+                <table class="data-table" id="attendanceTable">
+                    <thead>
+                        <tr>
+                            <th>学生ID</th>
+                            <th>姓名</th>
+                            <th>课程</th>
+                            <th>签到时间</th>
+                            <th>签退时间</th>
+                            <th>状态</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody id="attendanceTableBody">
+                        <!-- 数据将通过JavaScript动态填充 -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- 签到历史记录 -->
+            <div class="history-section">
+                <h3>签到历史记录</h3>
+                <div class="history-filters">
+                    <select id="historyDateRange">
+                        <option value="today">今天</option>
+                        <option value="week">本周</option>
+                        <option value="month">本月</option>
+                        <option value="custom">自定义</option>
+                    </select>
+                    <div class="custom-date-range" id="customDateRange" style="display: none;">
+                        <input type="date" id="startDate">
+                        <span>至</span>
+                        <input type="date" id="endDate">
+                    </div>
+                </div>
+                <div class="history-records" id="historyRecords">
+                    <!-- 历史记录将通过JavaScript动态填充 -->
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- 批量签到/签退模态框 -->
+    <div class="modal" id="batchModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>批量签到/签退</h3>
+                <button class="close-btn">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="student-list" id="batchStudentList">
+                    <!-- 学生列表将通过JavaScript动态填充 -->
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="cancelBatchBtn">取消</button>
+                <button class="btn btn-primary" id="confirmBatchBtn">确认</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="/js/modules/attendance.js"></script>
+</body>
+</html> 

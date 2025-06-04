@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>壹零贰肆少儿编程机构管理系统</title>
+    <link rel="stylesheet" href="css/main.css">
+    <!-- 引入字体图标 -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.0.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://kit.fontawesome.com/your-code.js"></script>
+    <!-- 添加 SheetJS 库 -->
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
+</head>
+<body>
+    <!-- 侧边栏 -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <h1>壹零贰肆少儿编程机构</h1>
+            <p>管理系统</p>
+        </div>
+        <nav class="sidebar-nav">
+            <ul>
+                <li><a href="index.html" class="active"><i class="fas fa-home"></i> 首页</a></li>
+                <li><a href="pages/student/list.html"><i class="fas fa-user-graduate"></i> 学生管理</a></li>
+                <li><a href="pages/course/list.html"><i class="fas fa-book"></i> 课程管理</a></li>
+                <!-- <li><a href="pages/analysis/analysis.html"><i class="fas fa-chart-bar"></i> 数据分析</a></li> -->
+                <li><a href="pages/finance/list.html"><i class="fas fa-money-bill-wave"></i> 财务管理</a></li>
+            </ul>
+        </nav>
+    </aside>
+
+    <!-- 主要内容区域 -->
+    <main class="main-content">
+        <!-- 顶部导航栏 -->
+        <div class="top-nav">
+            <h2>系统首页</h2>
+            <!-- 数据导出导入按钮 -->
+            <div class="data-actions">
+                <button id="exportDataBtn" class="btn btn-primary">
+                    <i class="fas fa-download"></i> 导出所有数据
+                </button>
+                <input type="file" id="importDataInput" accept=".json" style="display: none;">
+                <button id="importDataBtn" class="btn btn-secondary">
+                    <i class="fas fa-upload"></i> 导入数据
+                </button>
+            </div>
+            <!-- <div class="top-nav-actions">
+                <button class="btn btn-primary" id="toggleSidebar">
+                    <i class="fas fa-bars"></i> 菜单
+                </button>
+            </div> -->
+        </div>
+
+        <div class="dashboard">
+            <!-- 统计卡片 -->
+            <div class="quick-stats">
+                <div class="stat-card">
+                    <div class="stat-card-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div class="stat-card-info">
+                        <h3>学生总数</h3>
+                        <p id="totalStudents" class="number">0</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-card-icon">
+                        <i class="fas fa-book-open"></i>
+                    </div>
+                    <div class="stat-card-info">
+                        <h3>课程总数</h3>
+                        <p id="totalCourses" class="number">0</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 课程表 -->
+            <div class="schedule-section">
+                <h2>课程表</h2>
+                <div class="schedule-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>时间段</th>
+                                <th>星期一</th>
+                                <th>星期二</th>
+                                <th>星期三</th>
+                                <th>星期四</th>
+                                <th>星期五</th>
+                                <th>星期六</th>
+                                <th>星期日</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="time-slot">08:00-10:00</td>
+                                <td class="empty-slot">
+                                    <div class="slot-content" contenteditable="true">暂无课程</div>
+                                </td>
+                                <td class="empty-slot">
+                                    <div class="slot-content" contenteditable="true">暂无课程</div>
+                                </td>
+                                <td class="empty-slot">
+                                    <div class="slot-content" contenteditable="true">暂无课程</div>
+                                </td>
+                                <td class="empty-slot">
+                                    <div class="slot-content" contenteditable="true">暂无课程</div>
+                                </td>
+                                <td class="empty-slot">
+                                    <div class="slot-content" contenteditable="true">暂无课程</div>
+                                </td>
+                                <td class="empty-slot">
+                                    <div class="slot-content" contenteditable="true">暂无课程</div>
+                                </td>
+                                <td class="empty-slot">
+                                    <div class="slot-content" contenteditable="true">暂无课程</div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="time-slot">10:00-12:00</td>
+                                <td class="empty-slot">
+                                    <div class="slot-content" contenteditable="true">暂无课程</div>
+                                </td>
+                                <td class="empty-slot">
+                                    <div class="slot-content" contenteditable="true">暂无课程</div>
+                                </td>
+                                <td class="empty-slot">
+                                    <div class="slot-content" contenteditable="true">暂无课程</div>
+                                </td>
+                                <td class="empty-slot">
+                                    <div class="slot-content" contenteditable="true">暂无课程</div>
+                                </td>
+                                <td class="empty-slot">
+                                    <div class="slot-content" contenteditable="true">暂无课程</div>
+                                </td>
+                                <td class="empty-slot">
+                                    <div class="slot-content" contenteditable="true">暂无课程</div>
+                                </td>
+                                <td class="empty-slot">
+                                    <div class="slot-content" contenteditable="true">暂无课程</div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="time-slot">14:30-16:30</td>
+                                <td class="empty-slot">
+                                    <div class="slot-content" contenteditable="true">暂无课程</div>
+                                </td>
+                                <td class="empty-slot">
+                                    <div class="slot-content" contenteditable="true">暂无课程</div>
+                                </td>
+                                <td class="empty-slot">
+                                    <div class="slot-content" contenteditable="true">暂无课程</div>
+                                </td>
+                                <td class="empty-slot">
+                                    <div class="slot-content" contenteditable="true">暂无课程</div>
+                                </td>
+                                <td class="empty-slot">
+                                    <div class="slot-content" contenteditable="true">暂无课程</div>
+                                </td>
+                                <td class="empty-slot">
+                                    <div class="slot-content" contenteditable="true">暂无课程</div>
+                                </td>
+                                <td class="empty-slot">
+                                    <div class="slot-content" contenteditable="true">暂无课程</div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="time-slot">16:30-18:30</td>
+                                <td class="empty-slot">
+                                    <div class="slot-content" contenteditable="true">暂无课程</div>
+                                </td>
+                                <td class="empty-slot">
+                                    <div class="slot-content" contenteditable="true">暂无课程</div>
+                                </td>
+                                <td class="empty-slot">
+                                    <div class="slot-content" contenteditable="true">暂无课程</div>
+                                </td>
+                                <td class="empty-slot">
+                                    <div class="slot-content" contenteditable="true">暂无课程</div>
+                                </td>
+                                <td class="empty-slot">
+                                    <div class="slot-content" contenteditable="true">暂无课程</div>
+                                </td>
+                                <td class="empty-slot">
+                                    <div class="slot-content" contenteditable="true">暂无课程</div>
+                                </td>
+                                <td class="empty-slot">
+                                    <div class="slot-content" contenteditable="true">暂无课程</div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="time-slot">18:30-20:00</td>
+                                <td class="empty-slot">
+                                    <div class="slot-content" contenteditable="true">暂无课程</div>
+                                </td>
+                                <td class="empty-slot">
+                                    <div class="slot-content" contenteditable="true">暂无课程</div>
+                                </td>
+                                <td class="empty-slot">
+                                    <div class="slot-content" contenteditable="true">暂无课程</div>
+                                </td>
+                                <td class="empty-slot">
+                                    <div class="slot-content" contenteditable="true">暂无课程</div>
+                                </td>
+                                <td class="empty-slot">
+                                    <div class="slot-content" contenteditable="true">暂无课程</div>
+                                </td>
+                                <td class="empty-slot">
+                                    <div class="slot-content" contenteditable="true">暂无课程</div>
+                                </td>
+                                <td class="empty-slot">
+                                    <div class="slot-content" contenteditable="true">暂无课程</div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- 页脚 -->
+        <footer class="footer">
+            <p>&copy; 2025 少儿编程机构学生档案管理系统</p>
+        </footer>
+    </main>
+
+    <!-- JavaScript文件 -->
+    <script src="js/main.js"></script>
+</body>
+</html> 

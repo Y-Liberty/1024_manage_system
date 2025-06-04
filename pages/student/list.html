@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>学生管理 - 壹零贰肆少儿编程机构管理系统</title>
+    <link rel="stylesheet" href="../../css/main.css">
+    <link rel="stylesheet" href="../../css/components/student.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.0.0/css/all.min.css">
+</head>
+<body>
+    <!-- 侧边栏 -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <h1>壹零贰肆少儿编程机构</h1>
+            <p>管理系统</p>
+        </div>
+        <nav class="sidebar-nav">
+            <ul>
+                <li><a href="../../index.html"><i class="fas fa-home"></i> 首页</a></li>
+                <li><a href="list.html" class="active"><i class="fas fa-user-graduate"></i> 学生管理</a></li>
+                <li><a href="../course/list.html"><i class="fas fa-book"></i> 课程管理</a></li>
+                <!-- <li><a href="../analysis/analysis.html"><i class="fas fa-chart-bar"></i> 数据分析</a></li> -->
+                <li><a href="../finance/list.html"><i class="fas fa-money-bill-wave"></i> 财务管理</a></li>
+            </ul>
+        </nav>
+    </aside>
+
+    <!-- 主要内容区域 -->
+    <main class="main-content">
+        <!-- 顶部导航栏 -->
+        <div class="top-nav">
+            <h2>学生管理</h2>
+            <div class="top-nav-actions">
+                <!-- <button class="btn btn-primary" id="toggleSidebar">
+                    <i class="fas fa-bars"></i> 菜单
+                </button> -->
+                <button class="btn btn-secondary" id="addStudentBtn">
+                    <i class="fas fa-plus"></i> 添加学生
+                </button>
+            </div>
+        </div>
+
+        <div class="student-management">
+            <!-- 搜索和筛选区域 -->
+            <div class="search-filter">
+                <div class="search-box">
+                    <input type="text" id="searchInput" placeholder="搜索学生姓名...">
+                    <button class="btn-search"><i class="fas fa-search"></i></button>
+                </div>
+                <div class="filter-box">
+                    <select id="courseFilter">
+                        <option value="">所有课程</option>
+                        <!-- 课程选项将通过JavaScript动态加载 -->
+                    </select>
+                </div>
+            </div>
+
+            <!-- 学生列表表格 -->
+            <div class="table-container">
+                <table class="student-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>姓名</th>
+                            <th>性别</th>
+                            <th>年龄</th>
+                            <th>学校</th>
+                            <th>家长姓名</th>
+                            <th>联系方式</th>
+                            <th>课程类型</th>
+                            <th>剩余课时</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody id="studentTableBody">
+                        <!-- 学生数据将通过JavaScript动态加载 -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- 添加/编辑学生的模态框 -->
+        <div class="modal" id="studentModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>添加学生</h3>
+                    <button class="close-btn">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <form id="studentForm">
+                        <div class="form-columns">
+                            <div class="form-column">
+                                <div class="form-group">
+                                    <label for="studentId">ID</label>
+                                    <input type="text" id="studentId" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="studentName">姓名</label>
+                                    <input type="text" id="studentName" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="studentGender">性别</label>
+                                    <select id="studentGender" required>
+                                        <option value="男">男</option>
+                                        <option value="女">女</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="studentAge">年龄</label>
+                                    <input type="number" id="studentAge" required min="6" max="18">
+                                </div>
+                                <div class="form-group">
+                                    <label for="studentSchool">学校</label>
+                                    <input type="text" id="studentSchool" required>
+                                </div>
+                            </div>
+                            <div class="form-column">
+                                <div class="form-group">
+                                    <label for="parentName">家长姓名</label>
+                                    <input type="text" id="parentName" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="parentPhone">联系方式</label>
+                                    <input type="tel" id="parentPhone" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="studentCourse">课程类型</label>
+                                    <select id="studentCourse" required>
+                                        <!-- 课程选项将通过JavaScript动态加载 -->
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="remainingHours">剩余课时</label>
+                                    <input type="number" id="remainingHours" required min="0">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-actions">
+                            <button type="submit" class="btn-primary">保存</button>
+                            <button type="button" class="btn-secondary" id="cancelBtn">取消</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- 消课记录模态框 -->
+        <div class="modal" id="consumeModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>消课记录</h3>
+                    <button class="close-btn">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <form id="consumeForm">
+                        <div class="form-group">
+                            <label for="courseOperation">课时操作：</label>
+                            <select id="courseOperation" required>
+                                <option value="consume">消课</option>
+                                <option value="add">增加课时</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="consumeDate">日期</label>
+                            <input type="date" id="consumeDate" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="consumeHours">课时数量：</label>
+                            <input type="number" id="consumeHours" step="0.5" min="0.5" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="consumeNote">备注</label>
+                            <textarea id="consumeNote" rows="3" placeholder="可选填写备注信息"></textarea>
+                        </div>
+                        <div class="form-actions">
+                            <button type="submit" class="btn-primary">确认</button>
+                            <button type="button" class="btn-secondary" id="cancelConsumeBtn">取消</button>
+                            <button type="button" class="btn-info" id="viewHistoryBtn">
+                                <i class="fas fa-history"></i> 查看历史记录
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- 消课历史记录模态框 -->
+        <div id="historyModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>消课历史记录</h3>
+                    <span class="close-btn">&times;</span>
+                </div>
+                <div class="modal-body">
+                    <div class="info-section">
+                        <p>学生姓名：<span id="historyStudentName"></span></p>
+                        <p>剩余课时：<span id="historyRemainingHours"></span></p>
+                    </div>
+                    <div class="table-container">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>日期</th>
+                                    <th>课时</th>
+                                    <th>备注</th>
+                                    <th>操作</th>
+                                </tr>
+                            </thead>
+                            <tbody id="consumeHistoryTableBody">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-secondary" id="closeHistoryBtn">关闭</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 学生详情模态框 -->
+        <div class="modal" id="studentDetailsModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>学生详情</h3>
+                    <button class="close-btn">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="student-details">
+                        <div class="detail-group">
+                            <label>ID：</label>
+                            <span id="detailId"></span>
+                        </div>
+                        <div class="detail-group">
+                            <label>姓名：</label>
+                            <span id="detailName"></span>
+                        </div>
+                        <div class="detail-group">
+                            <label>性别：</label>
+                            <span id="detailGender"></span>
+                        </div>
+                        <div class="detail-group">
+                            <label>年龄：</label>
+                            <span id="detailAge"></span>
+                        </div>
+                        <div class="detail-group">
+                            <label>学校：</label>
+                            <span id="detailSchool"></span>
+                        </div>
+                        <div class="detail-group">
+                            <label>家长姓名：</label>
+                            <span id="detailParentName"></span>
+                        </div>
+                        <div class="detail-group">
+                            <label>联系方式：</label>
+                            <span id="detailParentPhone"></span>
+                        </div>
+                        <div class="detail-group">
+                            <label>课程类型：</label>
+                            <span id="detailCourse"></span>
+                        </div>
+                        <div class="detail-group">
+                            <label>剩余课时：</label>
+                            <span id="detailRemainingHours"></span>
+                        </div>
+                        <div class="detail-group">
+                            <label>当前积分：</label>
+                            <span id="detailPoints"></span>
+                        </div>
+                    </div>
+                    <div class="detail-actions">
+                        <button class="btn btn-points" id="managePointsBtn">
+                            <i class="fas fa-star"></i> 积分管理
+                        </button>
+                        <button class="btn btn-consume" id="consumeFromDetailsBtn">
+                            <i class="fas fa-clock"></i> 消课
+                        </button>
+                        <button class="btn btn-primary" id="editFromDetailsBtn">
+                            <i class="fas fa-edit"></i> 编辑
+                        </button>
+                        <button class="btn btn-danger" id="deleteFromDetailsBtn">
+                            <i class="fas fa-trash"></i> 删除
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 积分管理模态框 -->
+        <div class="modal" id="pointsModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>积分管理</h3>
+                    <button class="close-btn">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="points-info">
+                        <p>学生姓名：<span id="pointsStudentName"></span></p>
+                        <p>当前积分：<span id="currentPoints"></span></p>
+                    </div>
+                    <form id="pointsForm">
+                        <div class="form-group">
+                            <label for="pointsChange">积分变更：</label>
+                            <div class="points-input-group">
+                                <select id="pointsOperation">
+                                    <option value="add">增加</option>
+                                    <option value="subtract">减少</option>
+                                </select>
+                                <input type="number" id="pointsChange" required min="0" step="1">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="pointsNote">备注</label>
+                            <textarea id="pointsNote" rows="3" placeholder="请输入积分变更原因"></textarea>
+                        </div>
+                        <div class="form-actions">
+                            <button type="button" class="btn btn-info" id="viewPointsHistoryBtn">
+                                <i class="fas fa-history"></i> 查看历史记录
+                            </button>
+                            <button type="submit" class="btn-primary">确认修改</button>
+                            <button type="button" class="btn-secondary" id="cancelPointsBtn">取消</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- 积分历史记录模态框 -->
+        <div id="pointsHistoryModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>积分历史记录</h3>
+                    <span class="close-btn">&times;</span>
+                </div>
+                <div class="modal-body">
+                    <div class="info-section">
+                        <p>学生姓名：<span id="pointsHistoryStudentName"></span></p>
+                        <p>当前积分：<span id="pointsHistoryCurrentPoints"></span></p>
+                    </div>
+                    <div class="table-container">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>日期</th>
+                                    <th>变更</th>
+                                    <th>原因</th>
+                                    <th>操作</th>
+                                </tr>
+                            </thead>
+                            <tbody id="pointsHistoryTableBody">
+                                <!-- 数据将通过JavaScript动态加载 -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-secondary" id="closePointsHistoryBtn">关闭</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 页脚 -->
+        <footer class="footer">
+            <p>&copy; 2025 少儿编程机构学生档案管理系统</p>
+        </footer>
+    </main>
+
+    <!-- JavaScript文件 -->
+    <script src="../../js/modules/course.js"></script>
+    <script src="../../js/modules/student.js"></script>
+</body>
+</html> 

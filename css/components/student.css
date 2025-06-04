@@ -1,0 +1,1146 @@
+/* 学生管理页面样式 */
+.student-management {
+    background-color: white;
+    padding: 1.5rem;
+    border-radius: 0.35rem;
+    box-shadow: var(--shadow);
+}
+
+/* 页面头部样式 */
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+.page-header h2 {
+    color: #2c3e50;
+    margin: 0;
+}
+
+/* 按钮样式 */
+.btn-primary {
+    background-color: #3498db;
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: background-color 0.3s;
+}
+
+.btn-primary:hover {
+    background-color: #2980b9;
+}
+
+.btn-secondary {
+    background-color: #95a5a6;
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.btn-secondary:hover {
+    background-color: #7f8c8d;
+}
+
+.btn-info {
+    background-color: #2ecc71;
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 0.35rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.3s ease;
+}
+
+.btn-info:hover {
+    background-color: #27ae60;
+}
+
+/* 搜索和筛选区域 */
+.search-filter {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.search-box {
+    flex: 1;
+    display: flex;
+    gap: 0.5rem;
+}
+
+.search-box input {
+    flex: 1;
+    padding: 0.5rem;
+    border: 1px solid var(--border-color);
+    border-radius: 0.35rem;
+}
+
+.btn-search {
+    padding: 0.5rem 1rem;
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 0.35rem;
+    cursor: pointer;
+}
+
+.filter-box select {
+    padding: 0.5rem;
+    border: 1px solid var(--border-color);
+    border-radius: 0.35rem;
+    min-width: 150px;
+}
+
+/* 表格样式 */
+.table-container {
+    overflow-x: auto;
+}
+
+.student-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.student-table th,
+.student-table td {
+    padding: 0.75rem;
+    text-align: left;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.student-table th {
+    background-color: var(--light-color);
+    font-weight: 600;
+}
+
+.student-table tr:hover {
+    background-color: var(--light-color);
+}
+
+/* 操作按钮 */
+.action-buttons {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.btn-edit,
+.btn-consume,
+.btn-delete {
+    padding: 0.5rem 0.75rem;
+    border: none;
+    border-radius: 0.35rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+}
+
+.btn-edit {
+    background-color: var(--warning-color);
+    color: white;
+}
+
+.btn-edit:hover {
+    background-color: #d68910;
+}
+
+.btn-consume {
+    background-color: #3498db;
+    color: white;
+}
+
+.btn-consume:hover {
+    background-color: #2980b9;
+}
+
+.btn-delete {
+    background-color: var(--danger-color);
+    color: white;
+}
+
+.btn-delete:hover {
+    background-color: #c0392b;
+}
+
+/* 消课记录表格样式 */
+.consume-records {
+    margin-top: 2rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--border-color);
+}
+
+.consume-records h4 {
+    margin-bottom: 1rem;
+    color: var(--dark-color);
+}
+
+.consume-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.consume-table th,
+.consume-table td {
+    padding: 0.5rem;
+    text-align: left;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.consume-table th {
+    background-color: var(--light-color);
+    font-weight: 600;
+}
+
+.consume-table tr:hover {
+    background-color: var(--light-color);
+}
+
+/* 备注文本框样式 */
+#consumeNote {
+    width: 100%;
+    padding: 0.5rem;
+    border: 1px solid var(--border-color);
+    border-radius: 0.35rem;
+    resize: vertical;
+    min-height: 60px;
+    font-family: inherit;
+}
+
+#consumeNote:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+}
+
+/* 备注列样式 */
+.consume-table td.note-cell {
+    max-width: 200px;
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
+/* 模态框样式 */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+}
+
+.modal-content {
+    background-color: white;
+    margin: 2rem auto;
+    padding: 1.5rem;
+    border-radius: 0.35rem;
+    box-shadow: var(--shadow);
+    max-width: 800px;
+    width: 90%;
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.close-btn {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: var(--gray-color);
+}
+
+/* 表单样式 */
+.form-columns {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+}
+
+.form-group {
+    margin-bottom: 1rem;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: var(--dark-color);
+}
+
+.form-group input,
+.form-group select {
+    width: 100%;
+    padding: 0.5rem;
+    border: 1px solid var(--border-color);
+    border-radius: 0.35rem;
+}
+
+.form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    margin-top: 1.5rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--border-color);
+}
+
+/* 历史记录模态框样式 */
+.student-info {
+    background-color: var(--light-color);
+    padding: 1rem;
+    border-radius: 0.35rem;
+    margin-bottom: 1.5rem;
+}
+
+.student-info p {
+    margin: 0.5rem 0;
+    font-size: 1rem;
+    color: var(--dark-color);
+}
+
+.student-info span {
+    font-weight: 600;
+    color: var(--primary-color);
+}
+
+.history-records-container {
+    position: relative;
+    margin-bottom: 1.5rem;
+}
+
+.history-records {
+    max-height: 300px;
+    overflow-y: auto;
+    border: 1px solid var(--border-color);
+    border-radius: 0.35rem;
+}
+
+.history-records::-webkit-scrollbar {
+    width: 8px;
+}
+
+.history-records::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+}
+
+.history-records::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 4px;
+}
+
+.history-records::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+.consume-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.consume-table thead {
+    position: sticky;
+    top: 0;
+    background-color: var(--light-color);
+    z-index: 1;
+}
+
+.consume-table th {
+    padding: 0.75rem;
+    font-weight: 600;
+    text-align: left;
+    border-bottom: 2px solid var(--border-color);
+}
+
+.consume-table td {
+    padding: 0.75rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--border-color);
+}
+
+/* 导出按钮样式 */
+.btn-export {
+    background-color: #9b59b6;
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 0.35rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.3s ease;
+}
+
+.btn-export:hover {
+    background-color: #8e44ad;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+    .form-columns {
+        grid-template-columns: 1fr;
+    }
+    
+    .search-filter {
+        flex-direction: column;
+    }
+    
+    .filter-box select {
+        width: 100%;
+    }
+    
+    .action-buttons {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    
+    .btn-edit,
+    .btn-consume,
+    .btn-delete {
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .form-actions {
+        flex-direction: column;
+    }
+    
+    .btn-primary,
+    .btn-secondary,
+    .btn-info {
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .history-records {
+        max-height: 300px;
+    }
+    
+    .modal-footer {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    
+    .btn-export,
+    .btn-secondary {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+/* 编辑模式输入框样式 */
+.edit-date,
+.edit-hours,
+.edit-note {
+    width: 100%;
+    padding: 0.35rem;
+    border: 1px solid transparent;
+    border-radius: 0.25rem;
+    background-color: transparent;
+}
+
+.edit-date:not([disabled]),
+.edit-hours:not([disabled]),
+.edit-note:not([disabled]) {
+    border-color: var(--border-color);
+    background-color: white;
+}
+
+.edit-hours {
+    max-width: 80px;
+}
+
+.edit-note {
+    min-width: 150px;
+}
+
+.consume-table td {
+    padding: 0.5rem;
+    vertical-align: middle;
+}
+
+.consume-table .action-buttons {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: flex-start;
+}
+
+.consume-table .action-buttons button {
+    padding: 0.35rem 0.75rem;
+    font-size: 0.9rem;
+}
+
+/* 学生详情样式 */
+.student-details {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+    padding: 1.5rem;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+}
+
+.detail-group {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.75rem;
+    background-color: white;
+    border-radius: 6px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.detail-group label {
+    font-weight: 600;
+    min-width: 100px;
+    color: #4a5568;
+}
+
+.detail-group span {
+    color: #2d3748;
+    flex: 1;
+}
+
+.detail-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    margin-top: 1.5rem;
+    padding: 1rem;
+    border-top: 1px solid #e2e8f0;
+}
+
+.detail-actions button {
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.3s ease;
+}
+
+.detail-actions .btn-primary {
+    background-color: #4299e1;
+    color: white;
+}
+
+.detail-actions .btn-primary:hover {
+    background-color: #3182ce;
+    transform: translateY(-1px);
+}
+
+.detail-actions .btn-consume {
+    background-color: #38b2ac;
+    color: white;
+}
+
+.detail-actions .btn-consume:hover {
+    background-color: #319795;
+    transform: translateY(-1px);
+}
+
+.detail-actions .btn-danger {
+    background-color: #f56565;
+    color: white;
+}
+
+.detail-actions .btn-danger:hover {
+    background-color: #e53e3e;
+    transform: translateY(-1px);
+}
+
+/* 查看详情按钮样式 */
+.btn-view {
+    background-color: #4299e1;
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.3s ease;
+}
+
+.btn-view:hover {
+    background-color: #3182ce;
+    transform: translateY(-1px);
+}
+
+.btn-view i {
+    font-size: 0.9em;
+}
+
+/* 积分管理样式 */
+.points-info {
+    background-color: #f8f9fa;
+    padding: 1rem;
+    border-radius: 6px;
+    margin-bottom: 1.5rem;
+}
+
+.points-info p {
+    margin: 0.5rem 0;
+    font-size: 1rem;
+    color: #4a5568;
+}
+
+.points-info span {
+    font-weight: 600;
+    color: #2d3748;
+}
+
+.points-input-group {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+.points-input-group select {
+    width: 100px;
+    padding: 0.5rem;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    background-color: white;
+}
+
+.points-input-group input {
+    width: 120px;
+    padding: 0.5rem;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+}
+
+.points-history {
+    margin-top: 1.5rem;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.points-history h4 {
+    margin: 0;
+    padding: 1rem;
+    background-color: #f8f9fa;
+    color: #4a5568;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.points-table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: white;
+}
+
+.points-table th,
+.points-table td {
+    padding: 0.75rem 1rem;
+    text-align: left;
+    border-bottom: 1px solid #e2e8f0;
+    height: 3rem; /* 固定每行高度 */
+    line-height: 1.5;
+}
+
+.points-table th {
+    background-color: #f8f9fa;
+    font-weight: 600;
+    color: #4a5568;
+    position: sticky;
+    top: 0;
+    z-index: 1;
+}
+
+/* 设置表格容器的最大高度（6行记录 + 表头） */
+.points-history {
+    max-height: calc(3rem * 7); /* 3rem(每行高度) * (6行记录 + 1行表头) */
+    overflow-y: auto;
+}
+
+/* 自定义滚动条样式 */
+.points-history::-webkit-scrollbar {
+    width: 6px;
+}
+
+.points-history::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 3px;
+}
+
+.points-history::-webkit-scrollbar-thumb {
+    background: #cbd5e0;
+    border-radius: 3px;
+}
+
+.points-history::-webkit-scrollbar-thumb:hover {
+    background: #a0aec0;
+}
+
+.points-table tr:last-child td {
+    border-bottom: none;
+}
+
+.points-table tr:hover {
+    background-color: #f8f9fa;
+}
+
+.points-change-positive {
+    color: #28a745;
+    font-weight: 600;
+}
+
+.points-change-negative {
+    color: #dc3545;
+    font-weight: 600;
+}
+
+/* 调整积分模态框的大小和布局 */
+#pointsModal .modal-content {
+    max-width: 800px;
+    width: 90%;
+}
+
+#pointsModal .modal-body {
+    padding: 1.5rem;
+}
+
+#pointsForm .form-group {
+    margin-bottom: 1.5rem;
+}
+
+#pointsForm textarea {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    resize: vertical;
+    min-height: 80px;
+}
+
+/* 课时记录样式 */
+.text-success {
+    color: #38a169;
+    font-weight: 500;
+}
+
+.text-danger {
+    color: #e53e3e;
+    font-weight: 500;
+}
+
+#courseOperation {
+    width: 100%;
+    padding: 0.5rem;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    background-color: white;
+}
+
+/* 积分历史记录模态框样式 */
+#pointsHistoryModal .modal-content {
+    max-width: 800px;
+    min-width: 600px;
+    margin: 2rem auto;
+    padding: 1.5rem;
+    border-radius: 0.35rem;
+    box-shadow: var(--shadow);
+}
+
+#pointsHistoryModal .info-section {
+    background-color: #f8f9fa;
+    padding: 20px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+}
+
+#pointsHistoryModal .info-section p {
+    margin: 0;
+    font-size: 16px;
+    color: #495057;
+}
+
+#pointsHistoryModal .info-section span {
+    font-weight: bold;
+    color: #2c3e50;
+    margin-left: 8px;
+}
+
+#pointsHistoryModal .table-container {
+    margin: 0 20px 20px 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    overflow: hidden;
+    max-height: calc(53px * 6 + 45px); /* 表头高度45px + 每行高度53px * 6行 */
+    overflow-y: auto;
+}
+
+#pointsHistoryModal .data-table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: white;
+}
+
+#pointsHistoryModal .data-table th {
+    background-color: #f8fafc;
+    color: #4b5563;
+    font-weight: 600;
+    padding: 12px 16px;
+    text-align: left;
+    border-bottom: 2px solid #e5e7eb;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    height: 45px;
+}
+
+#pointsHistoryModal .data-table td {
+    padding: 16px;
+    border-bottom: 1px solid #e5e7eb;
+    color: #4b5563;
+    height: 53px;
+}
+
+#pointsHistoryModal .data-table tr:hover {
+    background-color: #f8fafc;
+}
+
+/* 确保表头在滚动时保持固定 */
+#pointsHistoryModal .data-table thead {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background-color: #f8fafc;
+}
+
+/* 自定义滚动条样式 */
+#pointsHistoryModal .table-container::-webkit-scrollbar {
+    width: 6px;
+}
+
+#pointsHistoryModal .table-container::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 3px;
+}
+
+#pointsHistoryModal .table-container::-webkit-scrollbar-thumb {
+    background: #cbd5e0;
+    border-radius: 3px;
+}
+
+#pointsHistoryModal .table-container::-webkit-scrollbar-thumb:hover {
+    background: #a0aec0;
+}
+
+/* 积分变化样式 */
+#pointsHistoryModal .data-table td:nth-child(2) {
+    font-weight: 600;
+}
+
+#pointsHistoryModal .data-table td:nth-child(2).text-success {
+    color: #059669 !important;
+}
+
+#pointsHistoryModal .data-table td:nth-child(2).text-danger {
+    color: #dc2626 !important;
+}
+
+.points-delete-btn {
+    padding: 0.4rem 0.8rem;
+    background-color: #e74c3c;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.points-delete-btn:hover {
+    background-color: #c0392b;
+    transform: translateY(-1px);
+}
+
+.points-delete-btn i {
+    font-size: 0.8rem;
+}
+
+@keyframes modalFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+    #pointsHistoryModal .modal-content {
+        min-width: unset;
+        width: 95%;
+        margin: 10px;
+    }
+
+    #pointsHistoryModal .info-section {
+        flex-direction: column;
+        gap: 10px;
+        align-items: flex-start;
+    }
+
+    #pointsHistoryModal .data-table th,
+    #pointsHistoryModal .data-table td {
+        padding: 12px;
+    }
+}
+
+/* 消课历史记录模态框样式 */
+#historyModal .modal-content {
+    max-width: 800px;
+    min-width: 600px;
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+
+#historyModal .modal-header {
+    background-color: #f8fafc;
+    padding: 20px 24px;
+    border-bottom: 1px solid #eef2f6;
+}
+
+#historyModal .modal-header h3 {
+    font-size: 20px;
+    color: #1a1a1a;
+    font-weight: 600;
+    margin: 0;
+}
+
+#historyModal .info-section {
+    background-color: #f8fafc;
+    padding: 20px;
+    border-radius: 8px;
+    margin: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+#historyModal .info-section p {
+    margin: 0;
+    font-size: 15px;
+    color: #4b5563;
+}
+
+#historyModal .info-section span {
+    font-weight: 600;
+    color: #1e293b;
+    margin-left: 8px;
+}
+
+#historyModal .table-container {
+    margin: 0 20px 20px 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    overflow: hidden;
+    max-height: calc(53px * 6 + 45px); /* 表头高度45px + 每行高度53px * 6行 */
+    overflow-y: auto;
+}
+
+#historyModal .data-table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: white;
+}
+
+#historyModal .data-table th {
+    background-color: #f8fafc;
+    color: #4b5563;
+    font-weight: 600;
+    padding: 12px 16px;
+    text-align: left;
+    border-bottom: 2px solid #e5e7eb;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    height: 45px;
+}
+
+#historyModal .data-table td {
+    padding: 16px;
+    border-bottom: 1px solid #e5e7eb;
+    color: #4b5563;
+    height: 53px;
+}
+
+#historyModal .data-table tr:hover {
+    background-color: #f8fafc;
+}
+
+#historyModal .data-table td:nth-child(2) {
+    font-weight: 600;
+}
+
+#historyModal .data-table td:nth-child(2).text-success {
+    color: #059669 !important;
+}
+
+#historyModal .data-table td:nth-child(2).text-danger {
+    color: #dc2626 !important;
+}
+
+#historyModal .modal-footer {
+    padding: 20px;
+    border-top: 1px solid #e5e7eb;
+    display: flex;
+    justify-content: flex-end;
+}
+
+#historyModal .btn-secondary {
+    background-color: #6b7280;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 6px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+#historyModal .btn-secondary:hover {
+    background-color: #4b5563;
+    transform: translateY(-1px);
+}
+
+/* 自定义滚动条样式 */
+#historyModal .table-container::-webkit-scrollbar {
+    width: 6px;
+}
+
+#historyModal .table-container::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 3px;
+}
+
+#historyModal .table-container::-webkit-scrollbar-thumb {
+    background: #cbd5e0;
+    border-radius: 3px;
+}
+
+#historyModal .table-container::-webkit-scrollbar-thumb:hover {
+    background: #a0aec0;
+}
+
+/* 确保表头在滚动时保持固定 */
+#historyModal .data-table thead {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background-color: #f8fafc;
+}
+
+/* 操作按钮样式 */
+#historyModal .data-table .action-buttons {
+    display: flex;
+    gap: 8px;
+}
+
+#historyModal .data-table .action-buttons button {
+    padding: 6px 12px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    transition: all 0.2s ease;
+}
+
+#historyModal .data-table .action-buttons .btn-edit {
+    background-color: #3b82f6;
+    color: white;
+}
+
+#historyModal .data-table .action-buttons .btn-edit:hover {
+    background-color: #2563eb;
+}
+
+#historyModal .data-table .action-buttons .btn-delete {
+    background-color: #ef4444;
+    color: white;
+}
+
+#historyModal .data-table .action-buttons .btn-delete:hover {
+    background-color: #dc2626;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+    #historyModal .modal-content {
+        min-width: unset;
+        width: 95%;
+        margin: 10px;
+    }
+
+    #historyModal .info-section {
+        flex-direction: column;
+        gap: 10px;
+        align-items: flex-start;
+    }
+
+    #historyModal .data-table th,
+    #historyModal .data-table td {
+        padding: 12px;
+    }
+
+    #historyModal .data-table .action-buttons {
+        flex-direction: column;
+    }
+
+    #historyModal .data-table .action-buttons button {
+        width: 100%;
+        justify-content: center;
+    }
+} 

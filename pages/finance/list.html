@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>财务管理 - 壹零贰肆少儿编程机构管理系统</title>
+    <link rel="stylesheet" href="../../css/main.css">
+    <link rel="stylesheet" href="../../css/components/finance.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.0.0/css/all.min.css">
+</head>
+<body>
+    <!-- 侧边栏 -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <h1>壹零贰肆少儿编程机构</h1>
+            <p>管理系统</p>
+        </div>
+        <nav class="sidebar-nav">
+            <ul>
+                <li><a href="../../index.html"><i class="fas fa-home"></i> 首页</a></li>
+                <li><a href="../student/list.html"><i class="fas fa-user-graduate"></i> 学生管理</a></li>
+                <li><a href="../course/list.html"><i class="fas fa-book"></i> 课程管理</a></li>
+                <li><a href="list.html" class="active"><i class="fas fa-money-bill-wave"></i> 财务管理</a></li>
+            </ul>
+        </nav>
+    </aside>
+
+    <!-- 主要内容区域 -->
+    <main class="main-content">
+        <!-- 顶部导航栏 -->
+        <div class="top-nav">
+            <h2>财务管理</h2>
+            <div class="top-nav-actions">
+                <button class="btn btn-secondary" id="addTransactionBtn">
+                    <i class="fas fa-plus"></i> 添加收支记录
+                </button>
+            </div>
+        </div>
+
+        <!-- 财务统计卡片 -->
+        <div class="finance-stats">
+            <div class="stat-card">
+                <div class="stat-icon income">
+                    <i class="fas fa-arrow-down"></i>
+                </div>
+                <div class="stat-info">
+                    <h3>本月收入</h3>
+                    <p id="monthlyIncome">¥0.00</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon expense">
+                    <i class="fas fa-arrow-up"></i>
+                </div>
+                <div class="stat-info">
+                    <h3>本月支出</h3>
+                    <p id="monthlyExpense">¥0.00</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon balance">
+                    <i class="fas fa-wallet"></i>
+                </div>
+                <div class="stat-info">
+                    <h3>账户余额</h3>
+                    <p id="totalBalance">¥0.00</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="finance-management">
+            <!-- 搜索和筛选区域 -->
+            <div class="search-filter">
+                <div class="search-box">
+                    <input type="text" id="searchInput" placeholder="搜索备注...">
+                    <button class="btn-search"><i class="fas fa-search"></i></button>
+                </div>
+                <div class="filter-box">
+                    <select id="typeFilter">
+                        <option value="">所有类型</option>
+                        <option value="收入">收入</option>
+                        <option value="支出">支出</option>
+                    </select>
+                    <input type="month" id="monthFilter">
+                </div>
+            </div>
+
+            <!-- 财务记录表格 -->
+            <div class="table-container">
+                <table class="finance-table">
+                    <thead>
+                        <tr>
+                            <th>日期</th>
+                            <th>类型</th>
+                            <th>金额</th>
+                            <th>分类</th>
+                            <th>备注</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody id="financeTableBody">
+                        <!-- 财务记录将通过JavaScript动态加载 -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- 添加/编辑收支记录的模态框 -->
+        <div class="modal" id="transactionModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>添加收支记录</h3>
+                    <button class="close-btn">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <form id="transactionForm">
+                        <div class="form-group">
+                            <label for="transactionDate">日期</label>
+                            <input type="date" id="transactionDate" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="transactionType">类型</label>
+                            <select id="transactionType" required>
+                                <option value="收入">收入</option>
+                                <option value="支出">支出</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="transactionAmount">金额</label>
+                            <input type="number" id="transactionAmount" step="0.01" min="0.01" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="transactionCategory">分类</label>
+                            <select id="transactionCategory" required>
+                                <option value="学费">学费</option>
+                                <option value="教材费">教材费</option>
+                                <option value="工资">工资</option>
+                                <option value="租金">租金</option>
+                                <option value="水电费">水电费</option>
+                                <option value="其他">其他</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="transactionNote">备注</label>
+                            <textarea id="transactionNote" rows="3"></textarea>
+                        </div>
+                        <div class="form-actions">
+                            <button type="submit" class="btn-primary">保存</button>
+                            <button type="button" class="btn-secondary" id="cancelBtn">取消</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- 页脚 -->
+        <footer class="footer">
+            <p>&copy; 2025 少儿编程机构学生档案管理系统</p>
+        </footer>
+    </main>
+
+    <!-- JavaScript文件 -->
+    <script src="../../js/modules/finance.js"></script>
+</body>
+</html> 

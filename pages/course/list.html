@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>课程管理 - 壹零贰肆少儿编程机构管理系统</title>
+    <link rel="stylesheet" href="../../css/main.css">
+    <link rel="stylesheet" href="../../css/components/course.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.0.0/css/all.min.css">
+</head>
+<body>
+    <!-- 侧边栏 -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <h1>壹零贰肆少儿编程机构</h1>
+            <p>管理系统</p>
+        </div>
+        <nav class="sidebar-nav">
+            <ul>
+                <li><a href="../../index.html"><i class="fas fa-home"></i> 首页</a></li>
+                <li><a href="../student/list.html"><i class="fas fa-user-graduate"></i> 学生管理</a></li>
+                <li><a href="list.html" class="active"><i class="fas fa-book"></i> 课程管理</a></li>
+                <li><a href="../finance/list.html"><i class="fas fa-money-bill-wave"></i> 财务管理</a></li>
+                <!-- <li><a href="../analysis/analysis.html"><i class="fas fa-chart-bar"></i> 数据分析</a></li> -->
+            </ul>
+        </nav>
+    </aside>
+
+    <!-- 主要内容区域 -->
+    <main class="main-content">
+        <!-- 顶部导航栏 -->
+        <div class="top-nav">
+            <h2>课程管理</h2>
+            <div class="top-nav-actions">
+                <!-- <button class="btn btn-primary" id="toggleSidebar">
+                    <i class="fas fa-bars"></i> 菜单
+                </button> -->
+                <button class="btn btn-secondary" id="addCourseBtn">
+                    <i class="fas fa-plus"></i> 添加课程
+                </button>
+            </div>
+        </div>
+
+        <div class="course-management">
+            <!-- 搜索和筛选区域 -->
+            <div class="search-filter">
+                <div class="search-box">
+                    <input type="text" id="searchInput" placeholder="搜索课程名称...">
+                    <button class="btn-search"><i class="fas fa-search"></i></button>
+                </div>
+                <div class="filter-box">
+                    <select id="levelFilter">
+                        <option value="">所有级别</option>
+                        <option value="初级">初级</option>
+                        <option value="中级">中级</option>
+                        <option value="高级">高级</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- 课程列表 -->
+            <div class="table-container">
+                <table class="course-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>课程名称</th>
+                            <th>级别</th>
+                            <th>课程描述</th>
+                            <th>容量</th>
+                            <th>已报名</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody id="courseTableBody">
+                        <!-- 课程数据将通过JavaScript动态加载 -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- 添加/编辑课程的模态框 -->
+        <div class="modal" id="courseModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>添加课程</h3>
+                    <button class="close-btn">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <form id="courseForm">
+                        <div class="form-group">
+                            <label for="courseName">课程名称</label>
+                            <input type="text" id="courseName" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="courseLevel">课程级别</label>
+                            <select id="courseLevel" required>
+                                <option value="初级">初级</option>
+                                <option value="中级">中级</option>
+                                <option value="高级">高级</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="courseDescription">课程描述</label>
+                            <textarea id="courseDescription" rows="3" required></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="courseCapacity">课程容量</label>
+                            <input type="number" id="courseCapacity" required min="1">
+                        </div>
+                        <div class="form-actions">
+                            <button type="submit" class="btn-primary">保存</button>
+                            <button type="button" class="btn-secondary" id="cancelBtn">取消</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- 页脚 -->
+        <footer class="footer">
+            <p>&copy; 2025 少儿编程机构学生档案管理系统</p>
+        </footer>
+    </main>
+
+    <!-- JavaScript文件 -->
+    <script src="../../js/modules/course.js"></script>
+</body>
+</html> 
