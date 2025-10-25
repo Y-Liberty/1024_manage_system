@@ -841,50 +841,95 @@ function exportAttendance() {
         XLSX.utils.book_append_sheet(wb, leaveWs, "请假记录");
     }
     
-    // === 工作表4: 日期统计 ===
-    const dateStatsData = [];
-    const dateStatsHeaders = ['日期', '星期', '应到人数', '实到人数', '迟到人数', '请假人数', '缺勤人数', '出勤率'];
-    dateStatsData.push(dateStatsHeaders);
+    // === 工作表4: 周出勤率统计 ===
+    const weekStatsData = [];
+    const weekStatsHeaders = ['周次', '日期范围', '应到人次', '实到人次', '迟到人次', '请假人次', '缺勤人次', '周出勤率'];
+    weekStatsData.push(weekStatsHeaders);
     
+    // 按周分组统计
+    const weekGroups = {};
     sortedDates.forEach(date => {
-        const records = attendanceRecords[date];
-        const weekDay = ['日', '一', '二', '三', '四', '五', '六'][new Date(date).getDay()];
-        const totalStudents = students.length;
+        const dateObj = new Date(date);
+        // 获取该日期所在周的周一日期
+        const dayOfWeek = dateObj.getDay();
+        const diff = dayOfWeek === 0 ? -6 : 1 - dayOfWeek; // 周日算上一周
+        const monday = new Date(dateObj);
+        monday.setDate(dateObj.getDate() + diff);
+        const weekKey = monday.toISOString().split('T')[0];
         
-        let present = 0;
-        let late = 0;
-        let leave = 0;
+        if (!weekGroups[weekKey]) {
+            weekGroups[weekKey] = {
+                dates: [],
+                monday: monday
+            };
+        }
+        weekGroups[weekKey].dates.push(date);
+    });
+    
+    // 按周一日期排序
+    const sortedWeeks = Object.keys(weekGroups).sort();
+    
+    sortedWeeks.forEach((weekKey, index) => {
+        const week = weekGroups[weekKey];
+        const dates = week.dates;
+        const monday = week.monday;
+        const sunday = new Date(monday);
+        sunday.setDate(monday.getDate() + 6);
         
-        Object.keys(records).forEach(studentId => {
-            const record = records[studentId];
-            if (record.onLeave) {
-                leave++;
-            } else if (record.checkIn) {
-                present++;
-                if (record.status === 'late') {
-                    late++;
+        const dateRange = `${monday.getMonth() + 1}/${monday.getDate()}-${sunday.getMonth() + 1}/${sunday.getDate()}`;
+        const weekNumber = `第${index + 1}周`;
+        
+        let totalAttendance = 0; // 总应到人次
+        let presentCount = 0;    // 实到人次
+        let lateCount = 0;       // 迟到人次
+        let leaveCount = 0;      // 请假人次
+        let absentCount = 0;     // 缺勤人次
+        
+        // 统计该周每天的数据
+        dates.forEach(date => {
+            const records = attendanceRecords[date];
+            const dailyTotal = students.length;
+            totalAttendance += dailyTotal;
+            
+            let dailyPresent = 0;
+            let dailyLate = 0;
+            let dailyLeave = 0;
+            
+            Object.keys(records).forEach(studentId => {
+                const record = records[studentId];
+                if (record.onLeave) {
+                    dailyLeave++;
+                } else if (record.checkIn) {
+                    dailyPresent++;
+                    if (record.status === 'late') {
+                        dailyLate++;
+                    }
                 }
-            }
+            });
+            
+            presentCount += dailyPresent;
+            lateCount += dailyLate;
+            leaveCount += dailyLeave;
+            absentCount += (dailyTotal - dailyPresent - dailyLeave);
         });
         
-        const absent = totalStudents - present - leave;
-        const rate = totalStudents > 0 ? ((present / totalStudents) * 100).toFixed(1) + '%' : '0%';
+        const weekRate = totalAttendance > 0 ? ((presentCount / totalAttendance) * 100).toFixed(1) + '%' : '0%';
         
-        dateStatsData.push([
-            date,
-            `星期${weekDay}`,
-            totalStudents,
-            present,
-            late,
-            leave,
-            absent,
-            rate
+        weekStatsData.push([
+            weekNumber,
+            dateRange,
+            totalAttendance,
+            presentCount,
+            lateCount,
+            leaveCount,
+            absentCount,
+            weekRate
         ]);
     });
     
-    const dateStatsWs = XLSX.utils.aoa_to_sheet(dateStatsData);
-    dateStatsWs['!cols'] = [12, 10, 12, 12, 12, 12, 12, 10].map(w => ({ wch: w }));
-    XLSX.utils.book_append_sheet(wb, dateStatsWs, "日期统计");
+    const weekStatsWs = XLSX.utils.aoa_to_sheet(weekStatsData);
+    weekStatsWs['!cols'] = [10, 15, 12, 12, 12, 12, 12, 12].map(w => ({ wch: w }));
+    XLSX.utils.book_append_sheet(wb, weekStatsWs, "周出勤率统计");
     
     // 导出文件
     const exportDate = new Date().toISOString().split('T')[0];
