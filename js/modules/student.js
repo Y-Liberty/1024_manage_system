@@ -186,7 +186,7 @@ window.editStudent = function(studentId) {
                 parentName: document.getElementById('parentName').value,
                 parentPhone: document.getElementById('parentPhone').value,
                 course: document.getElementById('studentCourse').value,
-                remainingHours: parseInt(document.getElementById('remainingHours').value),
+                remainingHours: parseFloat(document.getElementById('remainingHours').value),
                 consumeRecords: student.consumeRecords || [],
                 points: student.points || 0,
                 pointsHistory: student.pointsHistory || []

@@ -1,5 +1,239 @@
 /* 签到管理页面样式 */
 
+/* 模块化布局样式 */
+.attendance-stats-module,
+.attendance-management-module {
+    background: var(--card-bg, #ffffff);
+    border-radius: var(--border-radius, 8px);
+    box-shadow: var(--card-shadow, 0 2px 4px rgba(0,0,0,0.1));
+    margin-bottom: 2rem;
+    overflow: hidden;
+}
+
+.module-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.module-header h3 {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.module-header h3 i {
+    font-size: 1.1rem;
+}
+
+.module-header h4 {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+/* 签到统计模块内容 */
+.attendance-stats-module .stats-cards {
+    padding: 1.5rem;
+    margin: 0;
+}
+
+/* 签到管理页面样式 - 参考学生管理页面 */
+.attendance-management {
+    background-color: white;
+    padding: 1.5rem;
+    border-radius: 0.35rem;
+    box-shadow: var(--shadow, 0 2px 4px rgba(0,0,0,0.1));
+}
+
+/* 搜索和筛选区域 */
+.search-filter {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.search-box {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex: 1;
+    min-width: 300px;
+}
+
+.search-box input {
+    flex: 1;
+    padding: 0.75rem 1rem;
+    border: 1px solid #ddd;
+    border-radius: 0.5rem;
+    font-size: 0.9rem;
+    transition: border-color 0.2s;
+}
+
+.search-box input:focus {
+    outline: none;
+    border-color: #3498db;
+    box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+}
+
+.btn-search {
+    padding: 0.75rem 1rem;
+    border: none;
+    border-radius: 0.5rem;
+    background: #3498db;
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.btn-search:hover {
+    background: #2980b9;
+}
+
+.filter-box {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+}
+
+.filter-box .btn {
+    padding: 0.75rem 1.25rem;
+    border: none;
+    border-radius: 0.5rem;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.filter-box .btn-success {
+    background: #28a745;
+    color: white;
+}
+
+.filter-box .btn-success:hover {
+    background: #218838;
+    transform: translateY(-1px);
+}
+
+.filter-box .btn-warning {
+    background: #ffc107;
+    color: #212529;
+}
+
+.filter-box .btn-warning:hover {
+    background: #e0a800;
+    transform: translateY(-1px);
+}
+
+/* 状态徽章样式 */
+.status-badge {
+    padding: 0.25rem 0.75rem;
+    border-radius: 1rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    text-align: center;
+    display: inline-block;
+    min-width: 4rem;
+}
+
+.status-present {
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+.status-late {
+    background-color: #fff3cd;
+    color: #856404;
+    border: 1px solid #ffeaa7;
+}
+
+.status-absent {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
+.status-leave {
+    background-color: #d1ecf1;
+    color: #0c5460;
+    border: 1px solid #bee5eb;
+}
+
+/* 操作按钮样式 */
+.action-buttons {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.action-buttons .btn {
+    padding: 0.375rem 0.75rem;
+    font-size: 0.875rem;
+    border-radius: 0.375rem;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.action-buttons .btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.action-buttons .btn-primary {
+    background-color: #007bff;
+    color: white;
+}
+
+.action-buttons .btn-primary:hover:not(:disabled) {
+    background-color: #0056b3;
+}
+
+.action-buttons .btn-warning {
+    background-color: #ffc107;
+    color: #212529;
+}
+
+.action-buttons .btn-warning:hover:not(:disabled) {
+    background-color: #e0a800;
+}
+
+.action-buttons .btn-danger {
+    background-color: #dc3545;
+    color: white;
+}
+
+.action-buttons .btn-danger:hover:not(:disabled) {
+    background-color: #c82333;
+}
+
+.action-buttons .btn-info {
+    background-color: #17a2b8;
+    color: white;
+}
+
+.action-buttons .btn-info:hover:not(:disabled) {
+    background-color: #138496;
+}
+
 /* 统计卡片样式 */
 .stats-cards {
     display: grid;
@@ -73,37 +307,78 @@
     font-size: 0.9rem;
 }
 
+/* 响应式设计 */
+@media (max-width: 768px) {
+    .attendance-actions {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .search-box {
+        min-width: auto;
+    }
+    
+    .action-buttons {
+        justify-content: center;
+    }
+    
+    .stats-cards {
+        grid-template-columns: 1fr;
+    }
+    
+    .module-header h3 {
+        font-size: 1.1rem;
+    }
+    
+    .attendance-management-module > *:not(.module-header) {
+        padding: 0 1rem;
+    }
+    
+    .attendance-stats-module .stats-cards {
+        padding: 1rem;
+    }
+}
+
 .action-buttons {
     display: flex;
     gap: 1rem;
 }
 
-/* 签到表格样式 */
+/* 签到表格样式 - 参考学生管理页面 */
 .attendance-table {
     width: 100%;
     border-collapse: collapse;
-    margin-top: 1rem;
-    background: var(--card-bg);
-    border-radius: var(--border-radius);
+    background: white;
+    border-radius: 0.35rem;
     overflow: hidden;
-    box-shadow: var(--card-shadow);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
 .attendance-table th,
 .attendance-table td {
     padding: 1rem;
     text-align: left;
-    border-bottom: 1px solid var(--border-color);
+    border-bottom: 1px solid #e0e0e0;
 }
 
 .attendance-table th {
-    background: var(--table-header-bg);
+    background: #f8f9fa;
     font-weight: 600;
-    color: var(--text-primary);
+    color: #2c3e50;
+    font-size: 0.9rem;
+}
+
+.attendance-table td {
+    font-size: 0.9rem;
+    color: #555;
 }
 
 .attendance-table tr:hover {
-    background: var(--hover-color);
+    background: #f8f9fa;
+}
+
+.attendance-table tr:last-child td {
+    border-bottom: none;
 }
 
 /* 状态标签样式 */
@@ -129,13 +404,101 @@
     color: var(--warning-color);
 }
 
-/* 历史记录区域样式 */
+/* 历史记录区域样式 - 参考学生管理页面 */
 .history-section {
     margin-top: 2rem;
-    background: var(--card-bg);
-    padding: 1.5rem;
-    border-radius: var(--border-radius);
-    box-shadow: var(--card-shadow);
+    padding-top: 2rem;
+    border-top: 1px solid #e0e0e0;
+}
+
+.history-section h4 {
+    margin-bottom: 1rem;
+    color: #2c3e50;
+    font-size: 1.1rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.history-filters {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.history-filters select {
+    padding: 0.75rem 1rem;
+    border: 1px solid #ddd;
+    border-radius: 0.5rem;
+    font-size: 0.9rem;
+    background: white;
+    cursor: pointer;
+}
+
+.history-filters select:focus {
+    outline: none;
+    border-color: #3498db;
+    box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+}
+
+.custom-date-range {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.custom-date-range input {
+    padding: 0.75rem 1rem;
+    border: 1px solid #ddd;
+    border-radius: 0.5rem;
+    font-size: 0.9rem;
+}
+
+.custom-date-range span {
+    color: #666;
+    font-size: 0.9rem;
+}
+
+.history-records {
+    background: white;
+    border-radius: 0.35rem;
+    padding: 1rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.history-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.history-item:last-child {
+    border-bottom: none;
+}
+
+.history-date {
+    font-weight: 600;
+    color: #2c3e50;
+    font-size: 0.9rem;
+}
+
+.history-stats {
+    display: flex;
+    gap: 1rem;
+}
+
+.history-stats span {
+    padding: 0.25rem 0.75rem;
+    background: #3498db;
+    color: white;
+    border-radius: 0.5rem;
+    font-size: 0.875rem;
+    font-weight: 500;
 }
 
 .history-filters {
@@ -217,39 +580,51 @@
 }
 
 .modal-content {
-    background: var(--card-bg);
-    border-radius: var(--border-radius);
+    background: #ffffff;
+    border-radius: 0.5rem;
     width: 90%;
     max-width: 600px;
     max-height: 80vh;
     overflow-y: auto;
-    box-shadow: var(--card-shadow);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 .modal-header {
-    padding: 1rem;
-    border-bottom: 1px solid var(--border-color);
+    padding: 1.5rem;
+    border-bottom: 1px solid #e0e0e0;
     display: flex;
     justify-content: space-between;
     align-items: center;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-radius: 0.5rem 0.5rem 0 0;
 }
 
 .modal-header h3 {
     margin: 0;
-    color: var(--text-primary);
+    color: white;
+    font-size: 1.25rem;
+    font-weight: 600;
 }
 
 .close-btn {
     background: none;
     border: none;
     font-size: 1.5rem;
-    color: var(--text-secondary);
+    color: white;
     cursor: pointer;
     padding: 0.5rem;
+    opacity: 0.8;
+    transition: opacity 0.2s;
+}
+
+.close-btn:hover {
+    opacity: 1;
 }
 
 .modal-body {
-    padding: 1rem;
+    padding: 1.5rem;
+    background: #ffffff;
 }
 
 .student-list {
@@ -262,23 +637,139 @@
     display: flex;
     align-items: center;
     gap: 1rem;
-    padding: 0.5rem;
-    border: 1px solid var(--border-color);
-    border-radius: var(--border-radius);
-    background: var(--input-bg);
+    padding: 0.75rem;
+    border: 1px solid #e0e0e0;
+    border-radius: 0.5rem;
+    background: #f8f9fa;
+    transition: background-color 0.2s;
+}
+
+.student-item:hover {
+    background: #e9ecef;
 }
 
 .student-item input[type="checkbox"] {
     width: 1rem;
     height: 1rem;
+    cursor: pointer;
+}
+
+.student-item label {
+    cursor: pointer;
+    color: #2c3e50;
+    font-size: 0.9rem;
 }
 
 .modal-footer {
-    padding: 1rem;
-    border-top: 1px solid var(--border-color);
+    padding: 1rem 1.5rem;
+    border-top: 1px solid #e0e0e0;
     display: flex;
     justify-content: flex-end;
     gap: 1rem;
+    background: #f8f9fa;
+    border-radius: 0 0 0.5rem 0.5rem;
+}
+
+.modal-footer .btn {
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 0.5rem;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.modal-footer .btn-primary {
+    background: #3498db;
+    color: white;
+}
+
+.modal-footer .btn-primary:hover {
+    background: #2980b9;
+    transform: translateY(-1px);
+}
+
+.modal-footer .btn-secondary {
+    background: #95a5a6;
+    color: white;
+}
+
+.modal-footer .btn-secondary:hover {
+    background: #7f8c8d;
+    transform: translateY(-1px);
+}
+
+/* 时间输入模态框样式 */
+.time-input-info {
+    margin-bottom: 1.5rem;
+    padding: 1rem;
+    background: #f8f9fa;
+    border-radius: 0.5rem;
+}
+
+.time-input-info p {
+    margin: 0;
+    font-size: 0.95rem;
+    color: #2c3e50;
+}
+
+.time-input-info span {
+    font-weight: 600;
+    color: #3498db;
+}
+
+.modal-body .form-group {
+    margin-bottom: 1.5rem;
+}
+
+.modal-body .form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+    color: #2c3e50;
+    font-size: 0.9rem;
+}
+
+.modal-body .form-group input[type="date"],
+.modal-body .form-group input[type="time"],
+.modal-body .form-group select {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 1px solid #ddd;
+    border-radius: 0.5rem;
+    font-size: 0.9rem;
+    transition: border-color 0.2s;
+    background-color: white;
+}
+
+.modal-body .form-group input[type="date"]:focus,
+.modal-body .form-group input[type="time"]:focus,
+.modal-body .form-group select:focus {
+    outline: none;
+    border-color: #3498db;
+    box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+}
+
+.modal-body .form-group select {
+    cursor: pointer;
+}
+
+.modal-body .form-group textarea {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 1px solid #ddd;
+    border-radius: 0.5rem;
+    font-size: 0.9rem;
+    transition: border-color 0.2s;
+    font-family: inherit;
+    resize: vertical;
+}
+
+.modal-body .form-group textarea:focus {
+    outline: none;
+    border-color: #3498db;
+    box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
 }
 
 /* 响应式设计 */

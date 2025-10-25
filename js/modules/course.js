@@ -7,6 +7,36 @@ function initializeData() {
     const savedCourses = localStorage.getItem('courses');
     if (savedCourses) {
         courses = JSON.parse(savedCourses);
+        
+        // 更新所有课程的容量为20
+        let needsUpdate = false;
+        courses.forEach(course => {
+            if (course.capacity !== 20) {
+                course.capacity = 20;
+                needsUpdate = true;
+            }
+        });
+        
+        // 检查是否需要添加新课程
+        const existingCourseNames = courses.map(course => course.name);
+        if (!existingCourseNames.includes('校内辅导课')) {
+            // 添加新课程
+            const newCourse = {
+                id: Math.max(...courses.map(c => c.id)) + 1,
+                name: '校内辅导课',
+                level: '初级',
+                description: '校内辅导课程，针对学校课程进行辅导和答疑',
+                capacity: 20,
+                enrollCount: 0
+            };
+            courses.push(newCourse);
+            needsUpdate = true;
+        }
+        
+        // 如果有更新，保存到localStorage
+        if (needsUpdate) {
+            localStorage.setItem('courses', JSON.stringify(courses));
+        }
     } else {
         // 默认数据
         courses = [
@@ -23,7 +53,7 @@ function initializeData() {
                 name: 'Scratch进阶班',
                 level: '中级',
                 description: '进阶课程，学习复杂项目开发，适合已掌握Scratch基础的学员',
-                capacity: 15,
+                capacity: 20,
                 enrollCount: 0
             },
             {
@@ -31,7 +61,7 @@ function initializeData() {
                 name: 'Python基础班',
                 level: '初级',
                 description: 'Python编程基础语法与简单应用开发，适合12岁以上零基础学员',
-                capacity: 15,
+                capacity: 20,
                 enrollCount: 0
             },
             {
@@ -39,7 +69,7 @@ function initializeData() {
                 name: 'Python进阶班',
                 level: '中级',
                 description: 'Python高级特性与项目实战，适合已掌握Python基础的学员',
-                capacity: 12,
+                capacity: 20,
                 enrollCount: 0
             },
             {
@@ -47,7 +77,7 @@ function initializeData() {
                 name: 'Web开发班',
                 level: '中级',
                 description: 'HTML、CSS和JavaScript基础，网站开发实战课程',
-                capacity: 15,
+                capacity: 20,
                 enrollCount: 0
             },
             {
@@ -55,7 +85,7 @@ function initializeData() {
                 name: '游戏开发班',
                 level: '中级',
                 description: '使用Unity引擎开发2D和3D游戏，需要编程基础',
-                capacity: 12,
+                capacity: 20,
                 enrollCount: 0
             },
             {
@@ -63,7 +93,7 @@ function initializeData() {
                 name: 'C++语法基础班',
                 level: '初级',
                 description: 'C++编程基础语法，适合12岁以上零基础学员',
-                capacity: 15,
+                capacity: 20,
                 enrollCount: 0
             },
             {
@@ -71,15 +101,15 @@ function initializeData() {
                 name: 'C++算法基础班',
                 level: '中级',
                 description: '基础算法与数据结构，需要C++语法基础',
-                capacity: 12,
+                capacity: 20,
                 enrollCount: 0
             },
             {
                 id: 9,
                 name: 'C++算法进阶班',
-                level: '高级',
-                description: '高级算法与竞赛技巧，适合已掌握基础算法的学员',
-                capacity: 10,
+                level: '初级',
+                description: '校内无人机，scratch编程课程',
+                capacity: 20,
                 enrollCount: 0
             },
             {
@@ -87,9 +117,17 @@ function initializeData() {
                 name: '竞赛辅导班',
                 level: '高级',
                 description: '信息学奥赛、蓝桥杯等比赛辅导，需要较好的算法基础',
-                capacity: 8,
+                capacity: 20,
                 enrollCount: 0
-            }
+            },
+            {
+                id: 11,
+                name: '校内辅导课',
+                level: '初级',
+                description: '校内辅导课程，针对学校课程进行辅导和答疑',
+                capacity: 20,
+                enrollCount: 0
+            },
         ];
         // 保存到localStorage
         localStorage.setItem('courses', JSON.stringify(courses));
@@ -195,7 +233,7 @@ function addCourse(courseData) {
 }
 
 // 编辑课程
-window.editCourse = function(courseId) {
+function editCourse(courseId) {
     const course = courses.find(c => c.id === courseId);
     if (course) {
         const modal = document.getElementById('courseModal');

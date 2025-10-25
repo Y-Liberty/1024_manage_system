@@ -145,14 +145,21 @@ function setupSidebarToggle() {
 
 // 导出所有数据
 async function exportAllData() {
+    if (!window.XLSX) {
+        alert('导出功能需要加载XLSX库，请检查网络连接！');
+        return;
+    }
+    
     // 获取所有数据
     const data = {
         students: JSON.parse(localStorage.getItem('students') || '[]'),
         courses: JSON.parse(localStorage.getItem('courses') || '[]'),
         transactions: JSON.parse(localStorage.getItem('transactions') || '[]'),
-        schedule: JSON.parse(localStorage.getItem('schedule') || '[]'),
+        attendance: JSON.parse(localStorage.getItem('attendance') || '{}'),
+        leaveRecords: JSON.parse(localStorage.getItem('leaveRecords') || '{}'),
+        schedule: JSON.parse(localStorage.getItem('schedule') || '{}'),
         exportDate: new Date().toISOString(),
-        version: '1.0'
+        version: '2.0'
     };
 
     // 创建文件名（包含日期）
@@ -566,6 +573,154 @@ async function exportStudentExcel(students, baseFileName, dirHandle) {
     }
     
     XLSX.utils.book_append_sheet(wb, financeWs, "财务记录");
+
+    // 5. 导出签到记录
+    const attendanceRecords = JSON.parse(localStorage.getItem('attendance') || '{}');
+    const attendanceHeaders = ['日期', '星期', '学生ID', '姓名', '课程', '签到时间', '签退时间', '状态', '请假原因'];
+    const attendanceRows = [];
+    
+    // 按日期排序
+    const sortedDates = Object.keys(attendanceRecords).sort((a, b) => new Date(b) - new Date(a));
+    
+    sortedDates.forEach(date => {
+        const records = attendanceRecords[date];
+        const weekDay = ['日', '一', '二', '三', '四', '五', '六'][new Date(date).getDay()];
+        
+        Object.keys(records).forEach(studentId => {
+            const student = students.find(s => s.id == studentId);
+            if (student) {
+                const record = records[studentId];
+                const formatTime = (timeStr) => {
+                    if (!timeStr) return '-';
+                    const date = new Date(timeStr);
+                    return date.toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+                };
+                const getStatusText = (record) => {
+                    if (record.onLeave) return '请假';
+                    if (!record.checkIn) return '未签到';
+                    if (record.status === 'late') return '迟到';
+                    return '已签到';
+                };
+                
+                attendanceRows.push([
+                    date,
+                    `星期${weekDay}`,
+                    studentId,
+                    student.name,
+                    student.course,
+                    formatTime(record.checkIn),
+                    formatTime(record.checkOut),
+                    getStatusText(record),
+                    record.leaveReason || '-'
+                ]);
+            }
+        });
+    });
+    
+    if (attendanceRows.length > 0) {
+        const attendanceWs = XLSX.utils.aoa_to_sheet([attendanceHeaders, ...attendanceRows]);
+        attendanceWs['!cols'] = [12, 10, 10, 12, 15, 12, 12, 10, 20].map(width => ({ wch: width }));
+        attendanceWs['!rows'] = Array(attendanceRows.length + 1).fill({ hpt: 25 });
+        
+        const attendanceRange = XLSX.utils.decode_range(attendanceWs['!ref']);
+        for(let R = attendanceRange.s.r; R <= attendanceRange.e.r; R++) {
+            for(let C = attendanceRange.s.c; C <= attendanceRange.e.c; C++) {
+                const cellRef = XLSX.utils.encode_cell({r: R, c: C});
+                if(!attendanceWs[cellRef]) attendanceWs[cellRef] = { v: '', t: 's' };
+                
+                if(R === 0) {
+                    attendanceWs[cellRef] = { ...attendanceWs[cellRef], ...headerStyle };
+                } else {
+                    attendanceWs[cellRef] = { ...attendanceWs[cellRef], ...(R % 2 === 0 ? alternateRowStyle : dataStyle) };
+                }
+            }
+        }
+        
+        XLSX.utils.book_append_sheet(wb, attendanceWs, "签到记录");
+    }
+    
+    // 6. 导出请假记录
+    const leaveRecords = JSON.parse(localStorage.getItem('leaveRecords') || '{}');
+    const leaveHeaders = ['学生ID', '姓名', '课程', '开始日期', '结束日期', '请假天数', '请假原因', '申请时间'];
+    const leaveRows = [];
+    
+    Object.keys(leaveRecords).forEach(studentId => {
+        const student = students.find(s => s.id == studentId);
+        if (student) {
+            leaveRecords[studentId].forEach(leave => {
+                const startDate = new Date(leave.startDate);
+                const endDate = new Date(leave.endDate);
+                const days = Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24)) + 1;
+                
+                leaveRows.push([
+                    studentId,
+                    student.name,
+                    student.course,
+                    leave.startDate,
+                    leave.endDate,
+                    days,
+                    leave.reason,
+                    leave.createTime ? new Date(leave.createTime).toLocaleString('zh-CN') : '-'
+                ]);
+            });
+        }
+    });
+    
+    if (leaveRows.length > 0) {
+        const leaveWs = XLSX.utils.aoa_to_sheet([leaveHeaders, ...leaveRows]);
+        leaveWs['!cols'] = [10, 12, 15, 12, 12, 10, 25, 20].map(width => ({ wch: width }));
+        leaveWs['!rows'] = Array(leaveRows.length + 1).fill({ hpt: 25 });
+        
+        const leaveRange = XLSX.utils.decode_range(leaveWs['!ref']);
+        for(let R = leaveRange.s.r; R <= leaveRange.e.r; R++) {
+            for(let C = leaveRange.s.c; C <= leaveRange.e.c; C++) {
+                const cellRef = XLSX.utils.encode_cell({r: R, c: C});
+                if(!leaveWs[cellRef]) leaveWs[cellRef] = { v: '', t: 's' };
+                
+                if(R === 0) {
+                    leaveWs[cellRef] = { ...leaveWs[cellRef], ...headerStyle };
+                } else {
+                    leaveWs[cellRef] = { ...leaveWs[cellRef], ...(R % 2 === 0 ? alternateRowStyle : dataStyle) };
+                }
+            }
+        }
+        
+        XLSX.utils.book_append_sheet(wb, leaveWs, "请假记录");
+    }
+    
+    // 7. 导出课程信息
+    const courseHeaders = ['课程ID', '课程名称', '级别', '描述', '课程容量', '已报名人数'];
+    const courseRows = JSON.parse(localStorage.getItem('courses') || '[]')
+        .map(course => [
+            course.id,
+            course.name,
+            course.level,
+            course.description || '-',
+            course.capacity || 20,
+            course.enrollCount || 0
+        ]);
+    
+    if (courseRows.length > 0) {
+        const courseWs = XLSX.utils.aoa_to_sheet([courseHeaders, ...courseRows]);
+        courseWs['!cols'] = [10, 15, 10, 35, 12, 12].map(width => ({ wch: width }));
+        courseWs['!rows'] = Array(courseRows.length + 1).fill({ hpt: 25 });
+        
+        const courseRange = XLSX.utils.decode_range(courseWs['!ref']);
+        for(let R = courseRange.s.r; R <= courseRange.e.r; R++) {
+            for(let C = courseRange.s.c; C <= courseRange.e.c; C++) {
+                const cellRef = XLSX.utils.encode_cell({r: R, c: C});
+                if(!courseWs[cellRef]) courseWs[cellRef] = { v: '', t: 's' };
+                
+                if(R === 0) {
+                    courseWs[cellRef] = { ...courseWs[cellRef], ...headerStyle };
+                } else {
+                    courseWs[cellRef] = { ...courseWs[cellRef], ...(R % 2 === 0 ? alternateRowStyle : dataStyle) };
+                }
+            }
+        }
+        
+        XLSX.utils.book_append_sheet(wb, courseWs, "课程信息");
+    }
 
     // 导出Excel文件
     const excelBuffer = XLSX.write(wb, { 
