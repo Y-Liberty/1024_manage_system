@@ -714,7 +714,7 @@ function singleCheckOut(studentId) {
 }
 
 // 导出签到记录
-function exportAttendance() {
+async function exportAttendance() {
     const attendanceRecords = JSON.parse(localStorage.getItem('attendance') || '{}');
     const students = JSON.parse(localStorage.getItem('students') || '[]');
     const leaveRecords = JSON.parse(localStorage.getItem('leaveRecords') || '{}');
@@ -931,11 +931,46 @@ function exportAttendance() {
     weekStatsWs['!cols'] = [10, 15, 12, 12, 12, 12, 12, 12].map(w => ({ wch: w }));
     XLSX.utils.book_append_sheet(wb, weekStatsWs, "周出勤率统计");
     
-    // 导出文件
+    // 导出文件 - 使用 File System Access API 让用户选择保存路径
     const exportDate = new Date().toISOString().split('T')[0];
-    XLSX.writeFile(wb, `签到记录_${exportDate}.xlsx`);
+    const fileName = `签到记录_${exportDate}.xlsx`;
     
-    alert('签到记录导出成功！');
+    // 检查浏览器是否支持 File System Access API
+    if ('showSaveFilePicker' in window) {
+        try {
+            // 使用新的 API 让用户选择保存位置和文件名
+            const fileHandle = await window.showSaveFilePicker({
+                suggestedName: fileName,
+                types: [{
+                    description: 'Excel文件',
+                    accept: {
+                        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': ['.xlsx']
+                    }
+                }],
+                startIn: 'downloads'  // 默认从下载文件夹开始
+            });
+            
+            // 将工作簿转换为二进制数据
+            const wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+            
+            // 写入文件
+            const writable = await fileHandle.createWritable();
+            await writable.write(wbout);
+            await writable.close();
+            
+            alert('签到记录导出成功！');
+        } catch (err) {
+            // 用户取消了保存操作
+            if (err.name !== 'AbortError') {
+                console.error('导出失败:', err);
+                alert('导出失败，请重试！');
+            }
+        }
+    } else {
+        // 不支持新API，使用传统方式（直接下载到默认下载文件夹）
+        XLSX.writeFile(wb, fileName);
+        alert('签到记录已导出到浏览器默认下载文件夹！\n\n💡 提示：您的浏览器不支持选择保存位置功能。\n建议使用 Chrome 86+、Edge 86+ 等现代浏览器以获得更好体验。');
+    }
 }
 
 // 处理历史记录筛选
