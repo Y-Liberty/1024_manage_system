@@ -951,11 +951,16 @@ async function exportAttendance() {
             });
             
             // 将工作簿转换为二进制数据
-            const wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+            const wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'buffer' });
+            
+            // 创建 Blob 对象
+            const blob = new Blob([wbout], { 
+                type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' 
+            });
             
             // 写入文件
             const writable = await fileHandle.createWritable();
-            await writable.write(wbout);
+            await writable.write(blob);
             await writable.close();
             
             alert('签到记录导出成功！');
