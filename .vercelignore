@@ -1,0 +1,6 @@
+backup/
+.git/
+.gitignore
+*.md
+!README.md
+
