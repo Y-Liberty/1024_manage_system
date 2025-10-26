@@ -519,7 +519,6 @@ Copyright (c) 2025 壹零贰肆少儿编程机构管理系统
 <div align="center">
 
 **如果这个项目对您有帮助，请给一个 ⭐ Star 支持一下！**
-**如果使用有什么问题，请及时提交到issue！**
 
 Made with ❤️ by Y-Liberty
 
