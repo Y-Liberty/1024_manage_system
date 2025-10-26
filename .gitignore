@@ -1,0 +1,31 @@
+# 操作系统文件
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# 编辑器文件
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# 备份文件
+backup/
+*.bak
+
+# 日志文件
+*.log
+
+# 临时文件
+tmp/
+temp/
+
+# 说明文档（不上传，仅保留README.md）
+ATTENDANCE_RATE_FIX.md
+SCHEDULE_FEATURE_COMPLETE.md
+SCHEDULE_BASED_ATTENDANCE.md
+ATTENDANCE_RATE_CALCULATION.md
+TEST_ATTENDANCE_HISTORY.md
+ATTENDANCE_DEBUG.md
+DEPLOYMENT.md

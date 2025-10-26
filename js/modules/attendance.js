@@ -18,7 +18,12 @@ function initializeAttendance() {
 // 加载签到数据
 function loadAttendanceData() {
     const students = JSON.parse(localStorage.getItem('students') || '[]');
-    const today = new Date().toISOString().split('T')[0];
+    // 使用本地日期，避免时区问题
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = now.getMonth() + 1;
+    const day = now.getDate();
+    const today = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
     
     // 获取今天的签到记录
     const attendanceRecords = JSON.parse(localStorage.getItem('attendance') || '{}');
@@ -110,7 +115,9 @@ function isLate(checkInTime) {
 // 更新统计数据
 function updateAttendanceStats() {
     const students = JSON.parse(localStorage.getItem('students') || '[]');
-    const today = new Date().toISOString().split('T')[0];
+    // 使用本地日期，避免时区问题
+    const now = new Date();
+    const today = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
     const attendanceRecords = JSON.parse(localStorage.getItem('attendance') || '{}');
     const todayRecords = attendanceRecords[today] || {};
     
@@ -118,61 +125,123 @@ function updateAttendanceStats() {
     const todayCount = Object.values(todayRecords).filter(record => record.checkIn).length;
     document.getElementById('todayAttendance').textContent = todayCount;
     
-    // 计算本周签到率
-    const weeklyRate = calculateWeeklyRate(attendanceRecords, students.length);
+    // 计算本周签到率（传入学生数组而不是学生数量）
+    const weeklyRate = calculateWeeklyRate(attendanceRecords, students);
     document.getElementById('weeklyRate').textContent = `${weeklyRate}%`;
     
-    // 计算本月平均签到率
-    const monthlyRate = calculateMonthlyRate(attendanceRecords, students.length);
+    // 计算本月平均签到率（传入学生数组而不是学生数量）
+    const monthlyRate = calculateMonthlyRate(attendanceRecords, students);
     document.getElementById('monthlyRate').textContent = `${monthlyRate}%`;
 }
 
-// 计算本周签到率
-function calculateWeeklyRate(records, totalStudents) {
-    const today = new Date();
-    const weekStart = new Date(today);
-    // 计算本周一的日期（周日视为上一周，返回上周一）
-    const dayOfWeek = today.getDay();
-    const diff = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
-    weekStart.setDate(today.getDate() + diff);
+// 计算本周签到率（基于学生课程表）
+function calculateWeeklyRate(records, students) {
+    if (students.length === 0) return 0;
     
-    let totalDays = 0;
-    let totalAttendance = 0;
+    const now = new Date();
+    const todayStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
     
-    for (let i = 0; i < 7; i++) {
-        const date = new Date(weekStart);
-        date.setDate(weekStart.getDate() + i);
-        const dateStr = date.toISOString().split('T')[0];
+    // 计算本周一的日期（包括周日在内的完整一周）
+    const weekStart = new Date(now);
+    const dayOfWeek = now.getDay();
+    // 周一为1，周日为0，所以如果是周日，往前退6天到周一；否则退 (dayOfWeek - 1) 天
+    const daysToMonday = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
+    weekStart.setDate(now.getDate() - daysToMonday);
+    weekStart.setHours(0, 0, 0, 0);
+    
+    let totalShouldAttend = 0;  // 应该签到的总次数
+    let totalActualAttend = 0;   // 实际签到的总次数
+    
+    // 遍历每个学生
+    students.forEach(student => {
+        const scheduleDays = student.scheduleDays || [];  // 学生的上课时间
+        const everyDay = scheduleDays.length === 0;  // 空数组表示每天都上课
         
-        if (records[dateStr]) {
-            totalDays++;
-            totalAttendance += Object.values(records[dateStr]).filter(record => record.checkIn).length;
+        // 遍历从周一到今天（包括今天）
+        for (let i = 0; i <= 6; i++) {
+            const checkDate = new Date(weekStart);
+            checkDate.setDate(weekStart.getDate() + i);
+            checkDate.setHours(0, 0, 0, 0);
+            
+            // 手动构建日期字符串，避免时区问题
+            const year = checkDate.getFullYear();
+            const month = checkDate.getMonth() + 1;
+            const day = checkDate.getDate();
+            const dateStr = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+            
+            // 如果日期超过今天，停止统计
+            if (dateStr > todayStr) break;
+            
+            const currentDayOfWeek = checkDate.getDay();  // 0-6 (周日-周六)
+            
+            // 检查学生这一天是否应该上课
+            if (everyDay || scheduleDays.includes(currentDayOfWeek)) {
+                // 检查是否请假
+                const isOnLeave = records[dateStr] && records[dateStr][student.id]?.onLeave;
+                
+                // 如果没有请假，才计入应该签到
+                if (!isOnLeave) {
+                    totalShouldAttend++;  // 应该上课
+                    
+                    // 检查是否实际签到
+                    if (records[dateStr] && records[dateStr][student.id]?.checkIn) {
+                        totalActualAttend++;  // 实际签到
+                    }
+                }
+            }
         }
-    }
+    });
     
-    return totalDays > 0 ? Math.round((totalAttendance / (totalStudents * totalDays)) * 100) : 0;
+    // 签到率 = 实际签到次数 / 应该签到次数
+    return totalShouldAttend > 0 ? Math.round((totalActualAttend / totalShouldAttend) * 100) : 0;
 }
 
-// 计算本月平均签到率
-function calculateMonthlyRate(records, totalStudents) {
-    const today = new Date();
-    const monthStart = new Date(today.getFullYear(), today.getMonth(), 1);
+// 计算本月平均签到率（基于学生课程表）
+function calculateMonthlyRate(records, students) {
+    if (students.length === 0) return 0;
     
-    let totalDays = 0;
-    let totalAttendance = 0;
+    const now = new Date();
+    const currentDate = now.getDate(); // 今天是几号
+    const year = now.getFullYear();
+    const month = now.getMonth(); // 0-11
     
-    for (let i = 0; i < today.getDate(); i++) {
-        const date = new Date(monthStart);
-        date.setDate(monthStart.getDate() + i);
-        const dateStr = date.toISOString().split('T')[0];
+    let totalShouldAttend = 0;  // 应该签到的总次数
+    let totalActualAttend = 0;   // 实际签到的总次数
+    
+    // 遍历每个学生
+    students.forEach(student => {
+        const scheduleDays = student.scheduleDays || [];  // 学生的上课时间
+        const everyDay = scheduleDays.length === 0;  // 空数组表示每天都上课
         
-        if (records[dateStr]) {
-            totalDays++;
-            totalAttendance += Object.values(records[dateStr]).filter(record => record.checkIn).length;
+        // 从本月1号到今天（包括今天）
+        for (let i = 1; i <= currentDate; i++) {
+            const checkDate = new Date(year, month, i);
+            checkDate.setHours(0, 0, 0, 0);
+            const currentDayOfWeek = checkDate.getDay();  // 0-6 (周日-周六)
+            
+            // 检查学生这一天是否应该上课
+            if (everyDay || scheduleDays.includes(currentDayOfWeek)) {
+                // 手动构建日期字符串，避免时区问题
+                const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(i).padStart(2, '0')}`;
+                
+                // 检查是否请假
+                const isOnLeave = records[dateStr] && records[dateStr][student.id]?.onLeave;
+                
+                // 如果没有请假，才计入应该签到
+                if (!isOnLeave) {
+                    totalShouldAttend++;  // 应该上课
+                    
+                    // 检查是否实际签到
+                    if (records[dateStr] && records[dateStr][student.id]?.checkIn) {
+                        totalActualAttend++;  // 实际签到
+                    }
+                }
+            }
         }
-    }
+    });
     
-    return totalDays > 0 ? Math.round((totalAttendance / (totalStudents * totalDays)) * 100) : 0;
+    // 签到率 = 实际签到次数 / 应该签到次数
+    return totalShouldAttend > 0 ? Math.round((totalActualAttend / totalShouldAttend) * 100) : 0;
 }
 
 // 设置事件监听器
@@ -345,19 +414,21 @@ function showBatchModal(action) {
 
 // 批量签到
 function batchCheckIn(studentIds) {
-    const today = new Date().toISOString().split('T')[0];
+    // 使用本地日期，避免时区问题
+    const now = new Date();
+    const today = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
     const attendanceRecords = JSON.parse(localStorage.getItem('attendance') || '{}');
     
     if (!attendanceRecords[today]) {
         attendanceRecords[today] = {};
     }
     
-    const now = new Date().toISOString();
+    const timestamp = new Date().toISOString();
     studentIds.forEach(id => {
         if (!attendanceRecords[today][id]) {
             attendanceRecords[today][id] = {};
         }
-        attendanceRecords[today][id].checkIn = now;
+        attendanceRecords[today][id].checkIn = timestamp;
     });
     
     localStorage.setItem('attendance', JSON.stringify(attendanceRecords));
@@ -379,19 +450,21 @@ function batchCheckIn(studentIds) {
 
 // 批量签退
 function batchCheckOut(studentIds) {
-    const today = new Date().toISOString().split('T')[0];
+    // 使用本地日期，避免时区问题
+    const now = new Date();
+    const today = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
     const attendanceRecords = JSON.parse(localStorage.getItem('attendance') || '{}');
     
     if (!attendanceRecords[today]) {
         attendanceRecords[today] = {};
     }
     
-    const now = new Date().toISOString();
+    const timestamp = new Date().toISOString();
     studentIds.forEach(id => {
         if (!attendanceRecords[today][id]) {
             attendanceRecords[today][id] = {};
         }
-        attendanceRecords[today][id].checkOut = now;
+        attendanceRecords[today][id].checkOut = timestamp;
     });
     
     localStorage.setItem('attendance', JSON.stringify(attendanceRecords));
@@ -427,7 +500,10 @@ function showTimeInputModal(action, studentId, studentName) {
     
     // 设置默认日期和时间为当前时间
     const now = new Date();
-    dateInput.value = now.toISOString().split('T')[0];
+    const year = now.getFullYear();
+    const month = now.getMonth() + 1;
+    const day = now.getDate();
+    dateInput.value = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
     timeInput.value = now.toTimeString().slice(0, 5);
     
     // 根据操作类型显示/隐藏状态选择
@@ -553,7 +629,9 @@ function cancelAttendance(studentId, studentName) {
         return;
     }
     
-    const today = new Date().toISOString().split('T')[0];
+    // 使用本地日期，避免时区问题
+    const now = new Date();
+    const today = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
     const attendanceRecords = JSON.parse(localStorage.getItem('attendance') || '{}');
     const leaveRecords = JSON.parse(localStorage.getItem('leaveRecords') || '{}');
     
@@ -639,7 +717,8 @@ function showLeaveModal(studentId, studentName) {
     studentNameSpan.textContent = studentName;
     
     // 设置默认日期为今天
-    const today = new Date().toISOString().split('T')[0];
+    const now = new Date();
+    const today = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
     startDateInput.value = today;
     endDateInput.value = today;
     reasonInput.value = '';
@@ -690,7 +769,11 @@ function submitLeave(studentId, studentName, startDate, endDate, reason) {
     const end = new Date(endDate);
     
     for (let date = new Date(start); date <= end; date.setDate(date.getDate() + 1)) {
-        const dateStr = date.toISOString().split('T')[0];
+        // 手动构建日期字符串，避免时区问题
+        const year = date.getFullYear();
+        const month = date.getMonth() + 1;
+        const day = date.getDate();
+        const dateStr = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
         
         if (!attendanceRecords[dateStr]) {
             attendanceRecords[dateStr] = {};
@@ -727,7 +810,9 @@ function submitLeave(studentId, studentName, startDate, endDate, reason) {
 
 // 单个学生签到（保留旧函数以兼容）
 function singleCheckIn(studentId) {
-    const today = new Date().toISOString().split('T')[0];
+    // 使用本地日期，避免时区问题
+    const now = new Date();
+    const today = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
     const attendanceRecords = JSON.parse(localStorage.getItem('attendance') || '{}');
     
     if (!attendanceRecords[today]) {
@@ -744,8 +829,8 @@ function singleCheckIn(studentId) {
         return;
     }
     
-    const now = new Date().toISOString();
-    attendanceRecords[today][studentId].checkIn = now;
+    const timestamp = new Date().toISOString();
+    attendanceRecords[today][studentId].checkIn = timestamp;
     
     localStorage.setItem('attendance', JSON.stringify(attendanceRecords));
     loadAttendanceData();
@@ -760,7 +845,9 @@ function singleCheckIn(studentId) {
 
 // 单个学生签退
 function singleCheckOut(studentId) {
-    const today = new Date().toISOString().split('T')[0];
+    // 使用本地日期，避免时区问题
+    const now = new Date();
+    const today = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
     const attendanceRecords = JSON.parse(localStorage.getItem('attendance') || '{}');
     
     if (!attendanceRecords[today]) {
@@ -783,8 +870,8 @@ function singleCheckOut(studentId) {
         return;
     }
     
-    const now = new Date().toISOString();
-    attendanceRecords[today][studentId].checkOut = now;
+    const timestamp = new Date().toISOString();
+    attendanceRecords[today][studentId].checkOut = timestamp;
     
     localStorage.setItem('attendance', JSON.stringify(attendanceRecords));
     loadAttendanceData();
@@ -939,7 +1026,8 @@ async function exportAttendance() {
         const diff = dayOfWeek === 0 ? -6 : 1 - dayOfWeek; // 周日算上一周
         const monday = new Date(dateObj);
         monday.setDate(dateObj.getDate() + diff);
-        const weekKey = monday.toISOString().split('T')[0];
+        // 手动构建日期字符串，避免时区问题
+        const weekKey = `${monday.getFullYear()}-${String(monday.getMonth() + 1).padStart(2, '0')}-${String(monday.getDate()).padStart(2, '0')}`;
         
         if (!weekGroups[weekKey]) {
             weekGroups[weekKey] = {
@@ -1016,7 +1104,8 @@ async function exportAttendance() {
     XLSX.utils.book_append_sheet(wb, weekStatsWs, "周出勤率统计");
     
     // 导出文件 - 使用 File System Access API 让用户选择保存路径
-    const exportDate = new Date().toISOString().split('T')[0];
+    const now = new Date();
+    const exportDate = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
     const fileName = `签到记录_${exportDate}.xlsx`;
     
     // 检查浏览器是否支持 File System Access API
@@ -1101,7 +1190,13 @@ function loadHistoryRecords(range, customStartDate = null, customEndDate = null)
     const historyTable = document.getElementById('historyTable');
     const noHistoryData = document.getElementById('noHistoryData');
     
-    if (!historyTableBody) return;
+    if (!historyTableBody) {
+        console.error('找不到历史记录表格元素');
+        return;
+    }
+    
+    console.log('加载历史记录 - 范围:', range, '学生数:', students.length, '签到记录:', Object.keys(attendanceRecords).length);
+    console.log('所有签到记录的日期:', Object.keys(attendanceRecords).sort());
     
     let dateList = [];
     const today = new Date();
@@ -1109,30 +1204,43 @@ function loadHistoryRecords(range, customStartDate = null, customEndDate = null)
     // 根据范围筛选日期
     switch (range) {
         case 'today':
-            const todayStr = today.toISOString().split('T')[0];
+            // 使用本地日期，避免时区问题
+            const todayYear = today.getFullYear();
+            const todayMonth = today.getMonth() + 1;
+            const todayDay = today.getDate();
+            const todayStr = `${todayYear}-${String(todayMonth).padStart(2, '0')}-${String(todayDay).padStart(2, '0')}`;
             dateList = [todayStr];
             break;
             
         case 'week':
-            const weekStart = new Date(today);
             // 计算本周一的日期（周日视为上一周，返回上周一）
             const dayOfWeek = today.getDay();
             const diff = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
-            weekStart.setDate(today.getDate() + diff);
+            const weekStartDate = new Date(today);
+            weekStartDate.setDate(today.getDate() + diff);
+            
+            // 从本周一到今天，手动构建日期字符串避免时区问题
             for (let i = 0; i < 7; i++) {
-                const date = new Date(weekStart);
-                date.setDate(weekStart.getDate() + i);
-                dateList.push(date.toISOString().split('T')[0]);
+                const date = new Date(weekStartDate);
+                date.setDate(weekStartDate.getDate() + i);
+                const year = date.getFullYear();
+                const month = date.getMonth() + 1;
+                const day = date.getDate();
+                const dateStr = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                dateList.push(dateStr);
             }
             break;
             
         case 'month':
-            const monthStart = new Date(today.getFullYear(), today.getMonth(), 1);
-            const daysInMonth = today.getDate();
-            for (let i = 0; i < daysInMonth; i++) {
-                const date = new Date(monthStart);
-                date.setDate(monthStart.getDate() + i);
-                dateList.push(date.toISOString().split('T')[0]);
+            const currentDate = today.getDate(); // 今天是几号
+            const currentYear = today.getFullYear();
+            const currentMonth = today.getMonth() + 1; // 月份从0开始，需要+1
+            
+            // 从本月1号到今天（包括今天）
+            for (let i = 1; i <= currentDate; i++) {
+                // 手动构建日期字符串，避免时区问题
+                const dateStr = `${currentYear}-${String(currentMonth).padStart(2, '0')}-${String(i).padStart(2, '0')}`;
+                dateList.push(dateStr);
             }
             break;
             
@@ -1142,14 +1250,28 @@ function loadHistoryRecords(range, customStartDate = null, customEndDate = null)
             
         case 'custom':
             if (customStartDate && customEndDate) {
-                const start = new Date(customStartDate);
-                const end = new Date(customEndDate);
+                // 使用字符串分割避免时区问题
+                const [startYear, startMonth, startDay] = customStartDate.split('-').map(Number);
+                const [endYear, endMonth, endDay] = customEndDate.split('-').map(Number);
+                
+                const start = new Date(startYear, startMonth - 1, startDay);
+                const end = new Date(endYear, endMonth - 1, endDay);
+                
+                // 从开始日期到结束日期（包括结束日期），手动构建日期字符串
                 for (let date = new Date(start); date <= end; date.setDate(date.getDate() + 1)) {
-                    dateList.push(date.toISOString().split('T')[0]);
+                    const year = date.getFullYear();
+                    const month = date.getMonth() + 1;
+                    const day = date.getDate();
+                    const dateStr = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                    dateList.push(dateStr);
                 }
             }
             break;
     }
+    
+    // 调试信息：显示查询的日期范围
+    console.log('查询日期列表:', dateList);
+    console.log('查询日期数量:', dateList.length);
     
     // 创建表格行数据
     const tableRows = [];
@@ -1157,6 +1279,7 @@ function loadHistoryRecords(range, customStartDate = null, customEndDate = null)
     dateList.forEach(dateStr => {
         const dayRecords = attendanceRecords[dateStr];
         if (dayRecords) {
+            console.log(`  ${dateStr}: 找到 ${Object.keys(dayRecords).length} 条记录`);
             Object.keys(dayRecords).forEach(studentId => {
                 const student = students.find(s => s.id == studentId);
                 if (student) {
@@ -1169,6 +1292,8 @@ function loadHistoryRecords(range, customStartDate = null, customEndDate = null)
                         checkOut: record.checkOut,
                         record: record
                     });
+                } else {
+                    console.warn(`  ${dateStr}: 学生ID ${studentId} 在学生列表中不存在`);
                 }
             });
         }
@@ -1178,48 +1303,61 @@ function loadHistoryRecords(range, customStartDate = null, customEndDate = null)
     tableRows.sort((a, b) => {
         const dateCompare = new Date(b.date) - new Date(a.date);
         if (dateCompare !== 0) return dateCompare;
-        // 如果日期相同，按学生ID排序
-        return a.studentId.localeCompare(b.studentId);
+        // 如果日期相同，按学生ID排序（转换为字符串比较）
+        return String(a.studentId).localeCompare(String(b.studentId));
     });
     
     // 更新表格显示
+    console.log('历史记录表格行数:', tableRows.length);
+    
     if (tableRows.length === 0) {
         historyTable.style.display = 'none';
         noHistoryData.style.display = 'flex';
+        console.log('无历史记录数据');
     } else {
         historyTable.style.display = 'table';
         noHistoryData.style.display = 'none';
         
-        historyTableBody.innerHTML = tableRows.map(row => `
-            <tr>
-                <td>${row.studentId}</td>
-                <td>${row.studentName}</td>
-                <td>${formatDateShort(row.date)}</td>
-                <td>${row.checkIn ? formatTime(row.checkIn) : '-'}</td>
-                <td>${row.checkOut ? formatTime(row.checkOut) : '-'}</td>
-                <td>
-                    <span class="status-badge ${getStatusClass(row.record)}">
-                        ${getStatusText(row.record)}
-                    </span>
-                </td>
-            </tr>
-        `).join('');
+        historyTableBody.innerHTML = tableRows.map(row => {
+            try {
+                return `
+                    <tr>
+                        <td>${row.studentId}</td>
+                        <td>${row.studentName}</td>
+                        <td>${formatDateShort(row.date)}</td>
+                        <td>${row.checkIn ? formatTime(row.checkIn) : '-'}</td>
+                        <td>${row.checkOut ? formatTime(row.checkOut) : '-'}</td>
+                        <td>
+                            <span class="status-badge ${getStatusClass(row.record)}">
+                                ${getStatusText(row.record)}
+                            </span>
+                        </td>
+                    </tr>
+                `;
+            } catch (error) {
+                console.error('格式化历史记录行出错:', error, row);
+                return '';
+            }
+        }).join('');
+        
+        console.log('历史记录加载完成，显示了', tableRows.length, '条记录');
     }
 }
 
 // 格式化日期（简短格式）
 function formatDateShort(dateStr) {
-    const date = new Date(dateStr);
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const day = String(date.getDate()).padStart(2, '0');
+    // 使用字符串分割避免时区问题
+    const [year, month, day] = dateStr.split('-');
+    const date = new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
     const weekDay = ['日', '一', '二', '三', '四', '五', '六'][date.getDay()];
     return `${month}-${day} 周${weekDay}`;
 }
 
 // 格式化日期
 function formatDate(dateStr) {
-    const date = new Date(dateStr);
-    return `${date.getFullYear()}年${date.getMonth() + 1}月${date.getDate()}日`;
+    // 使用字符串分割避免时区问题
+    const [year, month, day] = dateStr.split('-');
+    return `${year}年${parseInt(month)}月${parseInt(day)}日`;
 }
 
 // 页面加载完成后初始化

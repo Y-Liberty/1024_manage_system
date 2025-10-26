@@ -168,6 +168,12 @@ window.editStudent = function(studentId) {
         document.getElementById('studentCourse').value = student.course;
         document.getElementById('remainingHours').value = student.remainingHours;
 
+        // 填充上课时间复选框
+        const scheduleDays = student.scheduleDays || [];
+        document.querySelectorAll('input[name="scheduleDay"]').forEach(checkbox => {
+            checkbox.checked = scheduleDays.includes(parseInt(checkbox.value));
+        });
+
         // 更改模态框标题
         modalTitle.textContent = '编辑学生';
 
@@ -177,6 +183,14 @@ window.editStudent = function(studentId) {
         // 更新表单提交处理
         form.onsubmit = (e) => {
             e.preventDefault();
+            
+            // 获取上课时间（勾选的日期）
+            const scheduleDays = [];
+            const dayCheckboxes = document.querySelectorAll('input[name="scheduleDay"]:checked');
+            dayCheckboxes.forEach(checkbox => {
+                scheduleDays.push(parseInt(checkbox.value));
+            });
+            
             const updatedStudent = {
                 id: parseInt(document.getElementById('studentId').value),
                 name: document.getElementById('studentName').value,
@@ -189,7 +203,8 @@ window.editStudent = function(studentId) {
                 remainingHours: parseFloat(document.getElementById('remainingHours').value),
                 consumeRecords: student.consumeRecords || [],
                 points: student.points || 0,
-                pointsHistory: student.pointsHistory || []
+                pointsHistory: student.pointsHistory || [],
+                scheduleDays: scheduleDays  // 添加上课时间
             };
 
             // 更新学生数据
@@ -581,6 +596,14 @@ document.addEventListener('DOMContentLoaded', () => {
         // 设置表单提交处理
         form.onsubmit = (e) => {
             e.preventDefault();
+            
+            // 获取上课时间（勾选的日期）
+            const scheduleDays = [];
+            const dayCheckboxes = document.querySelectorAll('input[name="scheduleDay"]:checked');
+            dayCheckboxes.forEach(checkbox => {
+                scheduleDays.push(parseInt(checkbox.value));
+            });
+            
             const newStudent = {
                 id: document.getElementById('studentId').value,
                 name: document.getElementById('studentName').value,
@@ -590,7 +613,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 parentName: document.getElementById('parentName').value,
                 parentPhone: document.getElementById('parentPhone').value,
                 course: document.getElementById('studentCourse').value,
-                remainingHours: parseInt(document.getElementById('remainingHours').value)
+                remainingHours: parseInt(document.getElementById('remainingHours').value),
+                scheduleDays: scheduleDays  // 添加上课时间
             };
             addStudent(newStudent);
             modal.style.display = 'none';
@@ -655,6 +679,19 @@ window.viewStudentDetails = function(studentId) {
         document.getElementById('detailCourse').textContent = student.course;
         document.getElementById('detailRemainingHours').textContent = student.remainingHours;
         document.getElementById('detailPoints').textContent = student.points || 0;
+        
+        // 显示上课时间
+        const scheduleDays = student.scheduleDays || [];
+        const dayNames = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'];
+        if (scheduleDays.length === 0) {
+            document.getElementById('detailSchedule').textContent = '每天';
+        } else {
+            const scheduleText = scheduleDays
+                .sort((a, b) => a - b)
+                .map(day => dayNames[day])
+                .join('、');
+            document.getElementById('detailSchedule').textContent = scheduleText;
+        }
 
         // 设置积分管理按钮事件
         document.getElementById('managePointsBtn').onclick = () => {
@@ -955,6 +992,14 @@ document.addEventListener('DOMContentLoaded', () => {
         // 设置表单提交处理
         form.onsubmit = (e) => {
             e.preventDefault();
+            
+            // 获取上课时间（勾选的日期）
+            const scheduleDays = [];
+            const dayCheckboxes = document.querySelectorAll('input[name="scheduleDay"]:checked');
+            dayCheckboxes.forEach(checkbox => {
+                scheduleDays.push(parseInt(checkbox.value));
+            });
+            
             const newStudent = {
                 id: document.getElementById('studentId').value,
                 name: document.getElementById('studentName').value,
@@ -964,7 +1009,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 parentName: document.getElementById('parentName').value,
                 parentPhone: document.getElementById('parentPhone').value,
                 course: document.getElementById('studentCourse').value,
-                remainingHours: parseInt(document.getElementById('remainingHours').value)
+                remainingHours: parseInt(document.getElementById('remainingHours').value),
+                scheduleDays: scheduleDays  // 添加上课时间
             };
             addStudent(newStudent);
             modal.style.display = 'none';

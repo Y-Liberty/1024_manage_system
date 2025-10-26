@@ -138,6 +138,41 @@
                                 </div>
                             </div>
                         </div>
+                        
+                        <!-- 上课时间选择 -->
+                        <div class="form-group schedule-group">
+                            <label>上课时间<span class="hint-text">（未选择表示每天上课）</span></label>
+                            <div class="schedule-days">
+                                <label class="day-checkbox">
+                                    <input type="checkbox" name="scheduleDay" value="1">
+                                    <span>周一</span>
+                                </label>
+                                <label class="day-checkbox">
+                                    <input type="checkbox" name="scheduleDay" value="2">
+                                    <span>周二</span>
+                                </label>
+                                <label class="day-checkbox">
+                                    <input type="checkbox" name="scheduleDay" value="3">
+                                    <span>周三</span>
+                                </label>
+                                <label class="day-checkbox">
+                                    <input type="checkbox" name="scheduleDay" value="4">
+                                    <span>周四</span>
+                                </label>
+                                <label class="day-checkbox">
+                                    <input type="checkbox" name="scheduleDay" value="5">
+                                    <span>周五</span>
+                                </label>
+                                <label class="day-checkbox">
+                                    <input type="checkbox" name="scheduleDay" value="6">
+                                    <span>周六</span>
+                                </label>
+                                <label class="day-checkbox">
+                                    <input type="checkbox" name="scheduleDay" value="0">
+                                    <span>周日</span>
+                                </label>
+                            </div>
+                        </div>
                         <div class="form-actions">
                             <button type="submit" class="btn-primary">保存</button>
                             <button type="button" class="btn-secondary" id="cancelBtn">取消</button>
@@ -268,6 +303,10 @@
                         <div class="detail-group">
                             <label>当前积分：</label>
                             <span id="detailPoints"></span>
+                        </div>
+                        <div class="detail-group">
+                            <label>上课时间：</label>
+                            <span id="detailSchedule" class="schedule-display"></span>
                         </div>
                     </div>
                     <div class="detail-actions">
