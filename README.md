@@ -10,7 +10,7 @@
 
 一个功能完善、界面美观的少儿编程机构综合管理系统
 
-[在线演示](https://your-demo-link.vercel.app) | [功能特性](#功能特性) | [快速开始](#快速开始) | [使用文档](#使用文档)
+[在线演示](https://manage.1024code.top/) | [功能特性](#功能特性) | [快速开始](#快速开始) | [使用文档](#使用文档)
 
 </div>
 
@@ -503,7 +503,7 @@ Copyright (c) 2025 壹零贰肆少儿编程机构管理系统
 
 - **项目地址**：[GitHub Repository](https://github.com/Y-Liberty/student_management_system)
 - **问题反馈**：[Issues](https://github.com/Y-Liberty/student_management_system/issues)
-- **在线演示**：[Demo Site](https://your-demo-link.vercel.app)
+- **在线演示**：[Demo Site](https://manage.1024code.top/)
 
 ---
 
