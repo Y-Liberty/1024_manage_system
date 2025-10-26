@@ -127,16 +127,38 @@
                             <option value="today">今天</option>
                             <option value="week">本周</option>
                             <option value="month">本月</option>
+                            <option value="all">全部</option>
                             <option value="custom">自定义</option>
                         </select>
                         <div class="custom-date-range" id="customDateRange" style="display: none;">
                             <input type="date" id="startDate">
                             <span>至</span>
                             <input type="date" id="endDate">
+                            <button class="btn btn-primary btn-sm" id="applyCustomDateBtn">
+                                <i class="fas fa-check"></i> 应用
+                            </button>
                         </div>
                     </div>
-                    <div class="history-records" id="historyRecords">
-                        <!-- 历史记录将通过JavaScript动态填充 -->
+                    <div class="history-table-container">
+                        <table class="history-table" id="historyTable">
+                            <thead>
+                                <tr>
+                                    <th>学生ID</th>
+                                    <th>姓名</th>
+                                    <th>日期</th>
+                                    <th>签到时间</th>
+                                    <th>签退时间</th>
+                                    <th>状态</th>
+                                </tr>
+                            </thead>
+                            <tbody id="historyTableBody">
+                                <!-- 历史记录将通过JavaScript动态填充 -->
+                            </tbody>
+                        </table>
+                        <div class="no-data" id="noHistoryData" style="display: none;">
+                            <i class="fas fa-inbox"></i>
+                            <p>暂无历史记录</p>
+                        </div>
                     </div>
                 </div>
             </div>

@@ -10,6 +10,9 @@ function initializeAttendance() {
     
     // 更新统计数据
     updateAttendanceStats();
+    
+    // 加载默认历史记录（今天）
+    loadHistoryRecords('today');
 }
 
 // 加载签到数据
@@ -128,7 +131,10 @@ function updateAttendanceStats() {
 function calculateWeeklyRate(records, totalStudents) {
     const today = new Date();
     const weekStart = new Date(today);
-    weekStart.setDate(today.getDate() - today.getDay());
+    // 计算本周一的日期（周日视为上一周，返回上周一）
+    const dayOfWeek = today.getDay();
+    const diff = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
+    weekStart.setDate(today.getDate() + diff);
     
     let totalDays = 0;
     let totalAttendance = 0;
@@ -203,6 +209,12 @@ function setupEventListeners() {
     const historyFilter = document.getElementById('historyDateRange');
     if (historyFilter) {
         historyFilter.addEventListener('change', handleHistoryFilter);
+    }
+    
+    // 自定义日期范围应用按钮
+    const applyCustomDateBtn = document.getElementById('applyCustomDateBtn');
+    if (applyCustomDateBtn) {
+        applyCustomDateBtn.addEventListener('click', handleCustomDateRange);
     }
     
     // 单个签到/签退/请假/取消按钮事件（使用事件委托）
@@ -351,6 +363,18 @@ function batchCheckIn(studentIds) {
     localStorage.setItem('attendance', JSON.stringify(attendanceRecords));
     loadAttendanceData();
     updateAttendanceStats();
+    
+    // 刷新历史记录
+    const currentRange = document.getElementById('historyDateRange').value;
+    if (currentRange === 'custom') {
+        const startDate = document.getElementById('startDate').value;
+        const endDate = document.getElementById('endDate').value;
+        if (startDate && endDate) {
+            loadHistoryRecords('custom', startDate, endDate);
+        }
+    } else {
+        loadHistoryRecords(currentRange);
+    }
 }
 
 // 批量签退
@@ -373,6 +397,18 @@ function batchCheckOut(studentIds) {
     localStorage.setItem('attendance', JSON.stringify(attendanceRecords));
     loadAttendanceData();
     updateAttendanceStats();
+    
+    // 刷新历史记录
+    const currentRange = document.getElementById('historyDateRange').value;
+    if (currentRange === 'custom') {
+        const startDate = document.getElementById('startDate').value;
+        const endDate = document.getElementById('endDate').value;
+        if (startDate && endDate) {
+            loadHistoryRecords('custom', startDate, endDate);
+        }
+    } else {
+        loadHistoryRecords(currentRange);
+    }
 }
 
 // 显示时间输入模态框
@@ -449,6 +485,18 @@ function performCheckIn(studentId, dateTimeStr, status = 'present') {
     loadAttendanceData();
     updateAttendanceStats();
     
+    // 刷新历史记录
+    const currentRange = document.getElementById('historyDateRange').value;
+    if (currentRange === 'custom') {
+        const startDate = document.getElementById('startDate').value;
+        const endDate = document.getElementById('endDate').value;
+        if (startDate && endDate) {
+            loadHistoryRecords('custom', startDate, endDate);
+        }
+    } else {
+        loadHistoryRecords(currentRange);
+    }
+    
     const student = JSON.parse(localStorage.getItem('students') || '[]').find(s => s.id == studentId);
     const statusText = status === 'late' ? '（迟到）' : '';
     if (student) {
@@ -480,6 +528,18 @@ function performCheckOut(studentId, dateTimeStr) {
     localStorage.setItem('attendance', JSON.stringify(attendanceRecords));
     loadAttendanceData();
     updateAttendanceStats();
+    
+    // 刷新历史记录
+    const currentRange = document.getElementById('historyDateRange').value;
+    if (currentRange === 'custom') {
+        const startDate = document.getElementById('startDate').value;
+        const endDate = document.getElementById('endDate').value;
+        if (startDate && endDate) {
+            loadHistoryRecords('custom', startDate, endDate);
+        }
+    } else {
+        loadHistoryRecords(currentRange);
+    }
     
     const student = JSON.parse(localStorage.getItem('students') || '[]').find(s => s.id == studentId);
     if (student) {
@@ -549,6 +609,18 @@ function cancelAttendance(studentId, studentName) {
         
         loadAttendanceData();
         updateAttendanceStats();
+        
+        // 刷新历史记录
+        const currentRange = document.getElementById('historyDateRange').value;
+        if (currentRange === 'custom') {
+            const startDate = document.getElementById('startDate').value;
+            const endDate = document.getElementById('endDate').value;
+            if (startDate && endDate) {
+                loadHistoryRecords('custom', startDate, endDate);
+            }
+        } else {
+            loadHistoryRecords(currentRange);
+        }
         
         alert(`${studentName} 的记录已取消！`);
     }
@@ -637,6 +709,18 @@ function submitLeave(studentId, studentName, startDate, endDate, reason) {
     
     loadAttendanceData();
     updateAttendanceStats();
+    
+    // 刷新历史记录
+    const currentRange = document.getElementById('historyDateRange').value;
+    if (currentRange === 'custom') {
+        const startDateInput = document.getElementById('startDate').value;
+        const endDateInput = document.getElementById('endDate').value;
+        if (startDateInput && endDateInput) {
+            loadHistoryRecords('custom', startDateInput, endDateInput);
+        }
+    } else {
+        loadHistoryRecords(currentRange);
+    }
     
     alert(`${studentName} 的请假申请已提交！\n请假时间：${startDate} 至 ${endDate}`);
 }
@@ -991,67 +1075,145 @@ function handleHistoryFilter() {
     }
 }
 
+// 处理自定义日期范围
+function handleCustomDateRange() {
+    const startDate = document.getElementById('startDate').value;
+    const endDate = document.getElementById('endDate').value;
+    
+    if (!startDate || !endDate) {
+        alert('请选择开始日期和结束日期！');
+        return;
+    }
+    
+    if (new Date(startDate) > new Date(endDate)) {
+        alert('结束日期不能早于开始日期！');
+        return;
+    }
+    
+    loadHistoryRecords('custom', startDate, endDate);
+}
+
 // 加载历史记录
-function loadHistoryRecords(range) {
+function loadHistoryRecords(range, customStartDate = null, customEndDate = null) {
     const attendanceRecords = JSON.parse(localStorage.getItem('attendance') || '{}');
     const students = JSON.parse(localStorage.getItem('students') || '[]');
-    const historyRecords = document.getElementById('historyRecords');
+    const historyTableBody = document.getElementById('historyTableBody');
+    const historyTable = document.getElementById('historyTable');
+    const noHistoryData = document.getElementById('noHistoryData');
     
-    let filteredRecords = [];
+    if (!historyTableBody) return;
+    
+    let dateList = [];
     const today = new Date();
     
+    // 根据范围筛选日期
     switch (range) {
         case 'today':
             const todayStr = today.toISOString().split('T')[0];
-            filteredRecords = attendanceRecords[todayStr] ? [{
-                date: todayStr,
-                records: attendanceRecords[todayStr]
-            }] : [];
+            dateList = [todayStr];
             break;
+            
         case 'week':
             const weekStart = new Date(today);
-            weekStart.setDate(today.getDate() - today.getDay());
+            // 计算本周一的日期（周日视为上一周，返回上周一）
+            const dayOfWeek = today.getDay();
+            const diff = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
+            weekStart.setDate(today.getDate() + diff);
             for (let i = 0; i < 7; i++) {
                 const date = new Date(weekStart);
                 date.setDate(weekStart.getDate() + i);
-                const dateStr = date.toISOString().split('T')[0];
-                if (attendanceRecords[dateStr]) {
-                    filteredRecords.push({
-                        date: dateStr,
-                        records: attendanceRecords[dateStr]
-                    });
-                }
+                dateList.push(date.toISOString().split('T')[0]);
             }
             break;
+            
         case 'month':
             const monthStart = new Date(today.getFullYear(), today.getMonth(), 1);
-            for (let i = 0; i < today.getDate(); i++) {
+            const daysInMonth = today.getDate();
+            for (let i = 0; i < daysInMonth; i++) {
                 const date = new Date(monthStart);
                 date.setDate(monthStart.getDate() + i);
-                const dateStr = date.toISOString().split('T')[0];
-                if (attendanceRecords[dateStr]) {
-                    filteredRecords.push({
-                        date: dateStr,
-                        records: attendanceRecords[dateStr]
-                    });
+                dateList.push(date.toISOString().split('T')[0]);
+            }
+            break;
+            
+        case 'all':
+            dateList = Object.keys(attendanceRecords);
+            break;
+            
+        case 'custom':
+            if (customStartDate && customEndDate) {
+                const start = new Date(customStartDate);
+                const end = new Date(customEndDate);
+                for (let date = new Date(start); date <= end; date.setDate(date.getDate() + 1)) {
+                    dateList.push(date.toISOString().split('T')[0]);
                 }
             }
             break;
     }
     
-    // 按日期降序排序
-    filteredRecords.sort((a, b) => new Date(b.date) - new Date(a.date));
+    // 创建表格行数据
+    const tableRows = [];
     
-    // 更新历史记录显示
-    historyRecords.innerHTML = filteredRecords.map(record => `
-        <div class="history-item">
-            <div class="history-date">${formatDate(record.date)}</div>
-            <div class="history-stats">
-                <span>签到: ${Object.values(record.records).filter(r => r.checkIn).length}</span>
-                <span>签退: ${Object.values(record.records).filter(r => r.checkOut).length}</span>
-            </div>
-        </div>
-    `).join('');
+    dateList.forEach(dateStr => {
+        const dayRecords = attendanceRecords[dateStr];
+        if (dayRecords) {
+            Object.keys(dayRecords).forEach(studentId => {
+                const student = students.find(s => s.id == studentId);
+                if (student) {
+                    const record = dayRecords[studentId];
+                    tableRows.push({
+                        studentId: student.id,
+                        studentName: student.name,
+                        date: dateStr,
+                        checkIn: record.checkIn,
+                        checkOut: record.checkOut,
+                        record: record
+                    });
+                }
+            });
+        }
+    });
+    
+    // 按日期降序排序（最新的在前）
+    tableRows.sort((a, b) => {
+        const dateCompare = new Date(b.date) - new Date(a.date);
+        if (dateCompare !== 0) return dateCompare;
+        // 如果日期相同，按学生ID排序
+        return a.studentId.localeCompare(b.studentId);
+    });
+    
+    // 更新表格显示
+    if (tableRows.length === 0) {
+        historyTable.style.display = 'none';
+        noHistoryData.style.display = 'flex';
+    } else {
+        historyTable.style.display = 'table';
+        noHistoryData.style.display = 'none';
+        
+        historyTableBody.innerHTML = tableRows.map(row => `
+            <tr>
+                <td>${row.studentId}</td>
+                <td>${row.studentName}</td>
+                <td>${formatDateShort(row.date)}</td>
+                <td>${row.checkIn ? formatTime(row.checkIn) : '-'}</td>
+                <td>${row.checkOut ? formatTime(row.checkOut) : '-'}</td>
+                <td>
+                    <span class="status-badge ${getStatusClass(row.record)}">
+                        ${getStatusText(row.record)}
+                    </span>
+                </td>
+            </tr>
+        `).join('');
+    }
+}
+
+// 格式化日期（简短格式）
+function formatDateShort(dateStr) {
+    const date = new Date(dateStr);
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    const weekDay = ['日', '一', '二', '三', '四', '五', '六'][date.getDay()];
+    return `${month}-${day} 周${weekDay}`;
 }
 
 // 格式化日期
