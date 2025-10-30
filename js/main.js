@@ -158,8 +158,9 @@ async function exportAllData() {
         attendance: JSON.parse(localStorage.getItem('attendance') || '{}'),
         leaveRecords: JSON.parse(localStorage.getItem('leaveRecords') || '{}'),
         schedule: JSON.parse(localStorage.getItem('schedule') || '{}'),
+        pointsStoreProducts: JSON.parse(localStorage.getItem('pointsStoreProducts') || '[]'),
         exportDate: new Date().toISOString(),
-        version: '2.0'
+        version: '2.1'
     };
 
     // 创建文件名（包含日期）
@@ -721,6 +722,41 @@ async function exportStudentExcel(students, baseFileName, dirHandle) {
         
         XLSX.utils.book_append_sheet(wb, courseWs, "课程信息");
     }
+    
+    // 8. 导出积分商城商品
+    const productsHeaders = ['商品ID', '商品名称', '商品类别', '所需积分', '库存数量', '商品描述', '图片URL'];
+    const productsData = JSON.parse(localStorage.getItem('pointsStoreProducts') || '[]');
+    const productsRows = productsData.map(product => [
+        product.id,
+        product.name,
+        product.category || '未分类',
+        product.points,
+        product.stock,
+        product.description || '-',
+        product.image || '-'
+    ]);
+    
+    if (productsRows.length > 0) {
+        const productsWs = XLSX.utils.aoa_to_sheet([productsHeaders, ...productsRows]);
+        productsWs['!cols'] = [15, 15, 12, 10, 10, 30, 30].map(width => ({ wch: width }));
+        productsWs['!rows'] = Array(productsRows.length + 1).fill({ hpt: 25 });
+        
+        const productsRange = XLSX.utils.decode_range(productsWs['!ref']);
+        for(let R = productsRange.s.r; R <= productsRange.e.r; R++) {
+            for(let C = productsRange.s.c; C <= productsRange.e.c; C++) {
+                const cellRef = XLSX.utils.encode_cell({r: R, c: C});
+                if(!productsWs[cellRef]) productsWs[cellRef] = { v: '', t: 's' };
+                
+                if(R === 0) {
+                    productsWs[cellRef] = { ...productsWs[cellRef], ...headerStyle };
+                } else {
+                    productsWs[cellRef] = { ...productsWs[cellRef], ...(R % 2 === 0 ? alternateRowStyle : dataStyle) };
+                }
+            }
+        }
+        
+        XLSX.utils.book_append_sheet(wb, productsWs, "积分商城商品");
+    }
 
     // 导出Excel文件
     const excelBuffer = XLSX.write(wb, { 
@@ -764,6 +800,9 @@ async function importData(file) {
             if (parsedData.courses) localStorage.setItem('courses', JSON.stringify(parsedData.courses));
             if (parsedData.transactions) localStorage.setItem('transactions', JSON.stringify(parsedData.transactions));
             if (parsedData.schedule) localStorage.setItem('schedule', JSON.stringify(parsedData.schedule));
+            if (parsedData.attendance) localStorage.setItem('attendance', JSON.stringify(parsedData.attendance));
+            if (parsedData.leaveRecords) localStorage.setItem('leaveRecords', JSON.stringify(parsedData.leaveRecords));
+            if (parsedData.pointsStoreProducts) localStorage.setItem('pointsStoreProducts', JSON.stringify(parsedData.pointsStoreProducts));
 
             // 更新页面显示
             updateStats(
