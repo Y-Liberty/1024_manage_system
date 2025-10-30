@@ -736,27 +736,26 @@ async function exportStudentExcel(students, baseFileName, dirHandle) {
         product.image || '-'
     ]);
     
-    if (productsRows.length > 0) {
-        const productsWs = XLSX.utils.aoa_to_sheet([productsHeaders, ...productsRows]);
-        productsWs['!cols'] = [15, 15, 12, 10, 10, 30, 30].map(width => ({ wch: width }));
-        productsWs['!rows'] = Array(productsRows.length + 1).fill({ hpt: 25 });
-        
-        const productsRange = XLSX.utils.decode_range(productsWs['!ref']);
-        for(let R = productsRange.s.r; R <= productsRange.e.r; R++) {
-            for(let C = productsRange.s.c; C <= productsRange.e.c; C++) {
-                const cellRef = XLSX.utils.encode_cell({r: R, c: C});
-                if(!productsWs[cellRef]) productsWs[cellRef] = { v: '', t: 's' };
-                
-                if(R === 0) {
-                    productsWs[cellRef] = { ...productsWs[cellRef], ...headerStyle };
-                } else {
-                    productsWs[cellRef] = { ...productsWs[cellRef], ...(R % 2 === 0 ? alternateRowStyle : dataStyle) };
-                }
+    // 始终导出积分商城工作表，即使没有数据
+    const productsWs = XLSX.utils.aoa_to_sheet([productsHeaders, ...productsRows]);
+    productsWs['!cols'] = [15, 15, 12, 10, 10, 30, 30].map(width => ({ wch: width }));
+    productsWs['!rows'] = Array(productsRows.length + 1).fill({ hpt: 25 });
+    
+    const productsRange = XLSX.utils.decode_range(productsWs['!ref']);
+    for(let R = productsRange.s.r; R <= productsRange.e.r; R++) {
+        for(let C = productsRange.s.c; C <= productsRange.e.c; C++) {
+            const cellRef = XLSX.utils.encode_cell({r: R, c: C});
+            if(!productsWs[cellRef]) productsWs[cellRef] = { v: '', t: 's' };
+            
+            if(R === 0) {
+                productsWs[cellRef] = { ...productsWs[cellRef], ...headerStyle };
+            } else {
+                productsWs[cellRef] = { ...productsWs[cellRef], ...(R % 2 === 0 ? alternateRowStyle : dataStyle) };
             }
         }
-        
-        XLSX.utils.book_append_sheet(wb, productsWs, "积分商城商品");
     }
+    
+    XLSX.utils.book_append_sheet(wb, productsWs, "积分商城商品");
 
     // 导出Excel文件
     const excelBuffer = XLSX.write(wb, { 
